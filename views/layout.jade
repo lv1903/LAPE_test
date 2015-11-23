@@ -1,0 +1,143 @@
+doctype html
+html
+    head
+        title Test Widgets
+        meta(charset='utf-8')
+        meta(http-equiv='X-UA-Compatible', content='IE=edge')
+        meta(name='viewport', content='width=device-width, initial-scale=1')
+        meta(name='description', content='')
+        meta(name='author', content='')
+
+        //script(src="/assets/javascripts/EventEmitter-VERSION.min.js")
+
+        link(href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css", rel='stylesheet')
+        script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js")
+        script(src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js")
+
+        script(type='text/javascript', src='/javascripts/EventEmitter-VERSION.min.js')
+
+        link(rel='stylesheet', href='/stylesheets/style.css')
+        link(rel='stylesheet', href='/stylesheets/timeSlider.css')
+        link(rel='stylesheet', href='/stylesheets/flexStyle.css')
+
+        link(href='http://fonts.googleapis.com/css?family=Raleway', rel='stylesheet', type='text/css')
+
+
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js")
+        script(src="http://d3js.org/d3.v3.min.js")
+        script(src="http://www.numericjs.com/lib/numeric-1.2.6.min.js")
+
+        script.
+            var data = !{JSON.stringify(data_obj)};
+            var LAPE_Config = !{JSON.stringify(LAPE_Config)};
+            //var config_timeSlider = !{JSON.stringify(config_timeSlider)};
+            console.log(data);
+            console.log(LAPE_Config);
+
+
+
+        //script(src="/javascripts/controller.js")
+        //script(src="/javascripts/changeView.js")
+        //script(src="/javascripts/timeSlider.js")
+        //
+        //
+        //script(src="/javascripts/init.js")
+
+    body
+
+        .navbar.navbar-default.navbar-fixed-top(role='navigation')
+            .container
+                .navbar-header
+                    button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+                        span.sr-only Toggle navigation
+                        span.icon-bar
+                        span.icon-bar
+                        span.icon-bar
+                    //a.navbar-brand(href='/', style="position:fixed;")
+                    //    //img#brandImage(src="/images/logo.png")
+                    //    span#brandText TEST
+                #navbar-main.navbar-collapse.collapse
+                    ul#navigate.nav.navbar-nav.navbar-right
+                        button#changeViewBtn.btn.btn-default.navbar-btn(type='button', data-toggle='modal', data-target='#changeViewModal') Change View
+
+        .changeView.modal.fade#changeViewModal
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        button.close(type="button",data-dismiss="modal",aria-hidden="false") &times;
+                        .modal-title
+                            h4 Change View
+
+                    .modal-body
+                        .container-fluid
+                            .row
+                                h2 Change View
+                            .row
+                                ul.nav
+                                    li
+                                        .row
+                                            .col-sm-2 Report
+                                            .col-sm-7
+                                                select.form-control#reportTypeSelect
+                                                    option(value='Indicator Report') Indicator Report
+                                                    option(value='Area Report') Area Report
+                                                    option(value='Compare Areas') Compare Areas
+                                            .col-sm-3
+
+
+                            .row
+                                h2 Options
+                            .row
+                                ul.nav
+                                    li
+                                        .row
+                                            .col-sm-2 Area Type
+                                            .col-sm-10
+                                                .input-group
+                                                    select.form-control.addFilterSelect#areaTypeSelect
+                                                        option(value='null') Please select...
+                                                    span.input-group-btn
+                                                        button.removeFilterBtn#areaTypeRemove.btn.btn-default(type='button') clear selection
+
+                                    li
+                                        .row
+                                            .col-sm-2 Area
+                                            .col-sm-10
+                                                .input-group
+                                                    select.form-control.addFilterSelect#areaSelect
+                                                        option(value='null') Please select...
+                                                    span.input-group-btn
+                                                        button.removeFilterBtn#areaRemove.btn.btn-default(type='button') clear selection
+
+                                    li
+                                        .row
+                                            .col-sm-2 Indicator
+                                            .col-sm-10
+                                                .input-group
+                                                    select.form-control.addFilterSelect#indicatorSelect
+                                                        option(value='null') Please select...
+                                                    span.input-group-btn
+                                                        button.removeFilterBtn#indicatorRemove.btn.btn-default(type='button') clear selection
+                                    li
+                                        .row
+                                            .col-sm-2 Gender
+                                            .col-sm-10
+                                                .input-group
+                                                    select.form-control.addFilterSelect#genderSelect
+                                                        option(value='null') Please select...
+                                                    span.input-group-btn
+                                                        button.removeFilterBtn#genderRemove.btn.btn-default(type='button') clear selection
+                                    li
+                                        .row
+                                            .col-sm-2 Period
+                                            .col-sm-10
+                                                .input-group
+                                                    select.form-control.addFilterSelect#periodSelect
+                                                        option(value='null') Please select...
+                                                    span.input-group-btn
+                                                        button.removeFilterBtn#periodRemove.btn.btn-default(type='button') clear selection
+                    .modal-footer
+                        button.close(type="button",data-dismiss="modal",aria-hidden="false") &times;
+
+
+        block content

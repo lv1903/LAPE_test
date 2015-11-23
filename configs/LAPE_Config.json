@@ -1,0 +1,90 @@
+
+
+{
+
+  "reportType": ["Area Report", "Indicator Report", "Compare Areas"],
+  "initReportType": ["Area Report"],
+
+  "filter": [
+    {
+      "text": "Area Type",
+      "name": "areaType",
+      "sourceHeader": "Area Type"
+    },
+    {
+      "text": "Area",
+      "name": "area",
+      "sourceHeader": "Area Code"
+    },
+    {
+      "text": "Indicator",
+      "name": "indicator",
+      "sourceHeader": "Indicator"
+    },
+    {
+      "text": "Gender",
+      "name": "gender",
+      "sourceHeader": "Sex"
+    },
+    {
+      "text": "Period",
+      "name": "period",
+      "sourceHeader": "Time Period"
+    }
+
+
+  ],
+
+  "areaList": {
+
+    "CU": [
+      {"id":"E10000014"," name":"Hampshire"},
+      {"id":"E10000009"," name":"Dorset"},
+      {"id":"E06000054"," name":"Wiltshire"},
+      {"id":"E06000044"," name":"Portsmouth"},
+      {"id":"E06000045"," name":"Southampton"},
+      {"id":"E06000046"," name":"Isle of Wight"}
+    ],
+
+    "DU": [
+      {"id":"E07000048"," name":"Christchurch"},
+      {"id":"E07000049"," name":"East Dorset"},
+      {"id":"E07000050"," name":"North Dorset"},
+      {"id":"E07000051"," name":"Purbeck"},
+      {"id":"E07000052"," name":"West Dorset"},
+      {"id":"E07000053"," name":"Weymouth and Portland"},
+      {"id":"E07000084"," name":"Basingstoke and Deane"},
+      {"id":"E07000085"," name":"East Hampshire"},
+      {"id":"E07000086"," name":"Eastleigh"},
+      {"id":"E07000087"," name":"Fareham"},
+      {"id":"E07000088"," name":"Gosport"},
+      {"id":"E07000089"," name":"Hart"},
+      {"id":"E07000090"," name":"Havant"},
+      {"id":"E07000091"," name":"New Forest"},
+      {"id":"E07000092"," name":"Rushmoor"},
+      {"id":"E07000093"," name":"Test Valley"},
+      {"id":"E07000094"," name":"Winchester"},
+      {"id":"E06000044"," name":"Portsmouth"},
+      {"id":"E06000045"," name":"Southampton"},
+      {"id":"E06000046"," name":"Isle of Wight"}
+    ],
+
+    "CCG": [
+      {"id":"E38000120"," name":"NHS NORTH HAMPSHIRE CCG"},
+      {"id":"E38000059"," name":"NHS FAREHAM AND GOSPORT CCG"},
+      {"id":"E38000087"," name":"NHS ISLE OF WIGHT CCG"},
+      {"id":"E38000137"," name":"NHS PORTSMOUTH CCG"},
+      {"id":"E38000154"," name":"NHS SOUTH EASTERN HAMPSHIRE CCG"},
+      {"id":"E38000167"," name":"NHS SOUTHAMPTON CCG"},
+      {"id":"E38000198"," name":"NHS WEST HAMPSHIRE CCG"},
+      {"id":"E38000045"," name":"NHS DORSET CCG"},
+      {"id":"E38000118"," name":"NHS NORTH EAST HAMPSHIRE AND FARNHAM CCG"},
+      {"id":"E38000206"," name":"NHS WILTSHIRE CCG"}
+
+    ]
+
+
+
+  }
+
+}

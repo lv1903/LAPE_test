@@ -1,0 +1,60 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+
+#headerRow{
+  padding-top: 30px;
+  height: 200px;
+}
+
+#headerContainer {
+  height: 200px;
+
+}
+
+.widgetHeaderContainer, .widgetContainer{
+
+  margin: 10px;
+  border-width: 3px;
+  border-color: black;
+  border: black;
+
+
+}
+
+.widgetHeaderContainer{
+
+  min-width: 600px;
+  min-height: 200px;
+
+  background: lightsteelblue;
+
+
+}
+
+.widgetContainer{
+  min-width: 600px;
+  min-height: 500px;
+
+  background: lightsteelblue;
+}
+
+
+/*FLEXBOX*/
+
+.flex-container {
+  display: -webkit-flex; /* Safari */
+  display: flex;
+
+  -webkit-flex-direction: row; /* Safari */
+  flex-direction:         row;
+
+  -webkit-flex-wrap: wrap; /* Safari */
+  flex-wrap:         wrap;
+}
