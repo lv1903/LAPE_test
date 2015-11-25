@@ -7,13 +7,21 @@ var ee = new EventEmitter();
 
 window.onload = function() {
 
-    console.log("on load")
+    console.log(indicator)
 
 
     //
-    changeView = new ChangeView();
-    //controller = new Controller(data, LAPE_Config);
-    //timeSlider = new TimeSlider(config_timeSlider)
+    //changeView = new ChangeView();
+
+    controller = new Controller(data, LAPE_Config);
+
+
+    timeSlider = new TimeSlider(config_timeSlider);
+
+    barGraph = new BarGraph(config_indicator_bargraph, indicator);
+    barGraph._init()
+
+
     //
     ////$('#changeViewModal').modal('show');
     //

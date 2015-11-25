@@ -1,14 +1,28 @@
 extends layout
 block content
 
-    h1 Indicator report
+    script.
+        var indicator = !{JSON.stringify(indicator)}
+        var genderType = !{JSON.stringify(genderType)}
+        var areaType = !{JSON.stringify(areaType)}
+
+        var config_indicator_bargraph = !{JSON.stringify(config_indicator_bargraph)}
+
+
+    script(src="/javascripts/bargraph.js")
+
+    script(src="/javascripts/init.js")
+
     .flex-group.indicator_group
         .flex-container.indicator_container
-            .flex-item.full_width.half_height Header
-            .flex-item.full_width.half_height Time slider
+            .flex-item.full_width.half_height
+                h3 Indicator report
+                h2 #{indicator} (#{genderType})
+                h3 #{areaType} in Wessex
+            .flex-item.full_width.half_height#timeSliderItem
         .flex-container.indicator_container
             .flex-item.full_width.full_height Text
             .flex-item.full_width.full_height Map
         .flex-container.indicator_container
-            .flex-item.full_width.full_height Bar graph
+            .flex-item.full_width.full_height#bargraphItem
             .flex-item.full_width.full_height Line graph

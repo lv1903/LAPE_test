@@ -35,6 +35,20 @@
 
   ],
 
+  "indicatorMapping":{
+    "Mortality from chronic liver disease": "3.01 - Mortality from chronic liver disease",
+    "Alcohol-specific mortality": "2.01 - Alcohol-specific mortality",
+    "Months of life lost due to alcohol": "1.01 - Months of life lost due to alcohol",
+    "Admission episodes for alcohol-related conditions": "9.01 - Admission episodes for alcohol-related conditions (Broad)"
+  },
+
+  "indicatorLabels":{
+    "Mortality from chronic liver disease": "per 100,000",
+    "Alcohol-specific mortality": "per 100,000",
+    "Months of life lost due to alcohol": "Months of life lost",
+    "Admission episodes for alcohol-related conditions": "per 100,000"
+  },
+
   "areaList": {
 
     "CU": [
@@ -70,16 +84,16 @@
     ],
 
     "CCG": [
-      {"id":"E38000120"," name":"NHS NORTH HAMPSHIRE CCG"},
-      {"id":"E38000059"," name":"NHS FAREHAM AND GOSPORT CCG"},
-      {"id":"E38000087"," name":"NHS ISLE OF WIGHT CCG"},
-      {"id":"E38000137"," name":"NHS PORTSMOUTH CCG"},
-      {"id":"E38000154"," name":"NHS SOUTH EASTERN HAMPSHIRE CCG"},
-      {"id":"E38000167"," name":"NHS SOUTHAMPTON CCG"},
-      {"id":"E38000198"," name":"NHS WEST HAMPSHIRE CCG"},
-      {"id":"E38000045"," name":"NHS DORSET CCG"},
-      {"id":"E38000118"," name":"NHS NORTH EAST HAMPSHIRE AND FARNHAM CCG"},
-      {"id":"E38000206"," name":"NHS WILTSHIRE CCG"}
+      {"id":"E38000120"," name":"NORTH HAMPSHIRE"},
+      {"id":"E38000059"," name":"FAREHAM AND GOSPORT"},
+      {"id":"E38000087"," name":"ISLE OF WIGHT"},
+      {"id":"E38000137"," name":"PORTSMOUTH"},
+      {"id":"E38000154"," name":"SOUTH EASTERN HAMPSHIRE"},
+      {"id":"E38000167"," name":"SOUTHAMPTON"},
+      {"id":"E38000198"," name":"WEST HAMPSHIRE"},
+      {"id":"E38000045"," name":"DORSET"},
+      {"id":"E38000118"," name":"NORTH EAST HAMPSHIRE AND FARNHAM"},
+      {"id":"E38000206"," name":"WILTSHIRE"}
 
     ]
 

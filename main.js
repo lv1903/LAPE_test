@@ -27,6 +27,10 @@ function getSubsetList(areaType){
     return subsetList
 }
 
+function getIndicatorMapped(indicator){
+    return encodeURIComponent(LAPE_Config.indicatorMapping[indicator]);
+}
+
 function nqm_render_query(options, subsetList, callback){
     var req = http.get(options, function(res) {
         //console.log('STATUS: ' + res.statusCode);
@@ -95,8 +99,10 @@ function nqm_render_query(options, subsetList, callback){
 //var inputFile = "data/All_LAPE_test_data.csv";
 //var data = getDataObject(inputFile);
 
-var LAPE_Config = require("./configs/LAPE_Config.json")
-var config_timeSlider = require("./configs/config_timeSlider.json")
+var LAPE_Config = require("./configs/LAPE_Config.json");
+var config_timeSlider = require("./configs/config_timeSlider.json");
+
+var config_indicator_bargraph = require("./configs/config_indicator_bar_graph.json");
 
 
 app.get('/', function(req, res){
@@ -123,16 +129,24 @@ app.get('/', function(req, res){
 
 
 
-app.get("/IndicatorReport/:areaType/:genderType", function(req, res){
+app.get("/IndicatorReport/:indicator/:areaType/:genderType", function(req, res){
 
-    console.log("render reportIndicator");
+
+
+    var indicator = req.params["indicator"];
+
+    //console.log(indicator)
 
     var areaType = req.params["areaType"];
     var genderType = req.params["genderType"];
-    var apiPath = '/v1/datasets/V1WDel7dQe/data?opts={"limit":10000}&filter={"Area%20Type":"' + areaType + '","Sex":"' + genderType + '"}';
 
     var subsetList = getSubsetList(areaType);
     //console.log(subsetList)
+
+    var indicatorMapped = getIndicatorMapped(indicator);
+
+    var apiPath = '/v1/datasets/41WGoeXhQg/data?opts={"limit":10000}&filter={"Indicator":"' + indicatorMapped + '","Area%20Type":"' + areaType + '","Sex":"' + genderType + '"}';
+    //console.log(apiPath)
 
     var options = {
         host: 'q.nqminds.com',
@@ -141,12 +155,18 @@ app.get("/IndicatorReport/:areaType/:genderType", function(req, res){
 
     var view = "reportIndicator";
 
+    console.log("request data")
     nqm_render_query(options, subsetList, function(obj){
+        console.log("render reportIndicator");
         res.render(view, {
             title: view,
+            indicator: indicator,
+            genderType: genderType,
+            areaType: areaType,
             data_obj: obj,
-            LAPE_Config: LAPE_Config//,
-            //config_timeSlider: config_timeSlider
+            LAPE_Config: LAPE_Config,
+            config_timeSlider: config_timeSlider,
+            config_indicator_bargraph: config_indicator_bargraph
         });
 
     });

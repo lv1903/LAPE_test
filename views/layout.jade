@@ -29,18 +29,21 @@ html
 
         script.
             var data = !{JSON.stringify(data_obj)};
-            var LAPE_Config = !{JSON.stringify(LAPE_Config)};
-            //var config_timeSlider = !{JSON.stringify(config_timeSlider)};
-            console.log(data);
-            console.log(LAPE_Config);
+
+            var LAPE_Config = !{JSON.stringify(LAPE_Config)}; //should these go in public?
+            var config_timeSlider = !{JSON.stringify(config_timeSlider)};
 
 
 
-        //script(src="/javascripts/controller.js")
+
+        script(src="/javascripts/controller.js")
+
         //script(src="/javascripts/changeView.js")
-        //script(src="/javascripts/timeSlider.js")
+
+        script(src="/javascripts/timeSlider.js")
         //
         //
+
         //script(src="/javascripts/init.js")
 
     body

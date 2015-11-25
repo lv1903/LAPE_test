@@ -34,6 +34,7 @@
     /*width: 90%;*/
     /*height: 90vh;*/
     background-color: lightgrey;
+    /*background-color: white;*/
 }
 .indicator_container{
     flex-direction: row;
@@ -46,22 +47,33 @@
 /*---------------------*/
 
 .flex-item {
-    background-color: cornflowerblue;
+    background-color: white;
     margin: 10px;
+    flex-grow: 1;
+    -webkit-flex-grow: 1;
+    flex: 1;
+    min-width: 45%;
+
+}
+
+@media (max-width: 1200px) {
+    .flex-item {
+        min-width: 80%;
+    }
 }
 
 .half_height {
-    height: 150px;
+    /*height: 150px;*/
 }
 
 .full_height {
-    height: 300px;
+    /*height: 300px;*/
 }
 
 .half_width {
-    min-width: 320px;
+    /*min-width: 320px;*/
 }
 
 .full_width{
-    min-width: 640px;
+    /*min-width: 640px;*/
 }

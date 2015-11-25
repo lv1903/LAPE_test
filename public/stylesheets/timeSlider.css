@@ -13,7 +13,7 @@
     /*color: #4FDEF2;*/
 /*}*/
 
-.axis {
+.slider .axis {
     fill: gray;
     -webkit-user-select: none;
     -moz-user-select: none;

@@ -31,8 +31,8 @@ TimeSlider.prototype._bindEvents = function(){
      bottom: 50,
      left: 50
      },
-     width = 500 - margin.left - margin.right,
-     height = 110 - margin.bottom - margin.top;
+     width = parseInt(d3.select(this._config.container).style("width"), 10) - margin.left - margin.right,
+     height = parseInt(d3.select(this._config.container).style("width"), 10)/4 - margin.bottom - margin.top;
 
 
      // scale function
@@ -53,8 +53,9 @@ TimeSlider.prototype._bindEvents = function(){
      //var startValue = timeScale(new Date('2012-01-01'));
      //var startingValue = new Date('2012-01-01');
 
-     var startValue = xScale(2012);
-     var startingValue = 2012;
+     var startingValue = controller._current_period;
+
+     var startValue = xScale(startingValue);
 
 
 
@@ -83,11 +84,12 @@ TimeSlider.prototype._bindEvents = function(){
              //handle.select('text').text(formatDate(value));
 
              handle.select('text').text(Math.round(value));
-             controller._slider_change(Math.round(value));
+             controller._period_change(Math.round(value));
         });
 
 
-     var svg = d3.select(this._config.container).append("svg")
+     var svg = d3.select(this._config.container)
+         .append("svg")
          .attr("width", width + margin.left + margin.right)
          .attr("height", height + margin.top + margin.bottom)
          .append("g")
@@ -95,7 +97,7 @@ TimeSlider.prototype._bindEvents = function(){
          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
      svg.append("g")
-         .attr("class", "x axis")
+         .attr("class", "slider x axis")
          // put in middle of screen
          .attr("transform", "translate(0," + height / 2 + ")")
          // introduce axis
