@@ -101,7 +101,7 @@ BarGraph.prototype._set_scales = function(){
     this.x.domain([0, d3.max(data, function (d) {return self.validate_NaN_to_0(d[config.value_field]);})]);
     this.y.domain( self.data.map(function (d) {return d[config.name_field];}));
 
-}
+};
 
 BarGraph.prototype._draw_axes = function(){
 
@@ -121,8 +121,6 @@ BarGraph.prototype._draw_axes = function(){
         .attr("class", "x axis")
         .attr("transform", "translate(0," + this.height + ")")
         .call(this.xAxis);
-
-    console.log(this._config.margin.left)
 
     this._chart.append("g")
         .attr("class", "y axis")

@@ -7,22 +7,31 @@ block content
         var areaType = !{JSON.stringify(areaType)}
 
         var config_indicator_bargraph = !{JSON.stringify(config_indicator_bargraph)}
+        var config_indicator_linegraph = !{JSON.stringify(config_indicator_linegraph)}
 
+        var xyz = "something"
+
+        console.log(indicator)
 
     script(src="/javascripts/bargraph.js")
+    script(src="/javascripts/linegraph.js")
 
     script(src="/javascripts/init.js")
+
+
 
     .flex-group.indicator_group
         .flex-container.indicator_container
             .flex-item.full_width.half_height
-                h3 Indicator report
                 h2 #{indicator} (#{genderType})
-                h3 #{areaType} in Wessex
+                h3 Indicator report: #{areaType} in Wessex
             .flex-item.full_width.half_height#timeSliderItem
         .flex-container.indicator_container
-            .flex-item.full_width.full_height Text
+            .flex-item.full_width.full_height
+                p #{genderType}
+                p The average #{indicator} in Wessex for #{genderType} is #{xyz}
+
             .flex-item.full_width.full_height Map
         .flex-container.indicator_container
             .flex-item.full_width.full_height#bargraphItem
-            .flex-item.full_width.full_height Line graph
+            .flex-item.full_width.full_height#linegraphItem

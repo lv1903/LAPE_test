@@ -19,6 +19,8 @@ app.use(bodyParser.json({limit: (5*1024*1000) }));
 var fs = require("fs");
 var http = require("http");
 
+var kernel = require("kernel-smooth")
+
 
 function getSubsetList(areaType){
     var obj = LAPE_Config.areaList[areaType];
@@ -29,6 +31,60 @@ function getSubsetList(areaType){
 
 function getIndicatorMapped(indicator){
     return encodeURIComponent(LAPE_Config.indicatorMapping[indicator]);
+}
+
+
+function getSubset(allObj, subsetList){
+    var subsetObj = [];
+    for(var i in allObj){
+        if(subsetList.indexOf(allObj[i]["Area Code"]) > -1 ){ // area code should be in a config file
+            subsetObj.push(allObj[i]);
+        }
+    }
+    return subsetObj
+}
+
+function getDensityObj(allObj, split_field, value_field){
+
+    //split the data into arrays (eg. one for each year)
+    var splitObj = {};
+    for(var i in allObj){
+        var year = allObj[i][split_field];
+        if(!splitObj.hasOwnProperty(year)){
+            splitObj[year] = [];
+        }
+        splitObj[year].push(allObj[i][value_field])
+    }
+
+    //for each array in split obj get datum for density function
+    var densityObj = {};
+    for(var year in splitObj){
+        var arr = splitObj[year];
+
+
+        //create array of integer x points
+        var x_arr = []
+        for(var i = Math.floor(Math.min.apply(null, arr) - 1); i < Math.ceil(Math.max.apply(null, arr) +1); i++){
+            x_arr.push(i);
+        };
+
+        var bandwidth = 5;
+        var kde = kernel.density(arr, kernel.fun.epanechnikov, bandwidth);
+        var density_arr = kde(x_arr);
+
+
+        //combine the arrays
+        var combine_arr = [];
+        var combine_obj;
+        for(var i = 0; i < x_arr.length; i++){
+            combine_obj = {};
+            combine_obj.x = x_arr[i];
+            combine_obj.density = density_arr[i]
+            combine_arr.push(combine_obj)
+        }
+        densityObj[year] = combine_arr;
+    }
+    return densityObj
 }
 
 function nqm_render_query(options, subsetList, callback){
@@ -45,14 +101,14 @@ function nqm_render_query(options, subsetList, callback){
 
             //extract the subset list for the area you require
             var allObj = JSON.parse(body).data;
-            var subsetObj = [];
-            for(var i in allObj){
-                if(subsetList.indexOf(allObj[i]["Area Code"]) > -1 ){
-                    subsetObj.push(allObj[i]);
-                }
-            }
+            var subsetObj = getSubset(allObj, subsetList);
 
-            callback(subsetObj)
+            //get array for density function
+            var splitBy = "Map Period";
+            var value = "Value"
+            var densityObj = getDensityObj(allObj, splitBy, value);
+
+            callback(subsetObj, datumObj)
         })
     });
     req.on('error', function(e) {
@@ -61,48 +117,13 @@ function nqm_render_query(options, subsetList, callback){
 }
 
 
-//var dataArray = [];
 
-//function getDataObject(inputFile){
-//
-//
-//    fs.readFile(inputFile, 'utf-8', function (err, data) {
-//
-//        if (err) throw err;
-//
-//        //var dataArray = [];
-//        var lines = data.trim().split('\n');
-//        //console.log(lines)
-//        var fields = lines[0].trim().split(',');
-//        //console.log(fields)
-//        max_fields = fields.length;
-//        //console.log(max_fields)
-//        var max_lines = lines.length;
-//        //console.log(max_lines)
-//
-//        //for(i = 1; i < 3; i++){
-//        for (i = 1; i < max_lines; i++) {
-//            oRecord = {};
-//            aLine = lines[i].trim().split(',');
-//            //console.log(aLine)
-//            for (j = 0; j < max_fields; j++) {
-//                oRecord[fields[j]] = aLine[j];
-//            }
-//            dataArray.push(oRecord)
-//        }
-//        //console.log(dataArray[0])
-//        //return dataArray;
-//        console.log("dataRead")
-//    });
-//}
-
-//var inputFile = "data/All_LAPE_test_data.csv";
-//var data = getDataObject(inputFile);
 
 var LAPE_Config = require("./configs/LAPE_Config.json");
 var config_timeSlider = require("./configs/config_timeSlider.json");
 
 var config_indicator_bargraph = require("./configs/config_indicator_bar_graph.json");
+var config_indicator_linegraph = require("./configs/config_indicator_line_graph.json");
 
 
 app.get('/', function(req, res){
@@ -166,7 +187,8 @@ app.get("/IndicatorReport/:indicator/:areaType/:genderType", function(req, res){
             data_obj: obj,
             LAPE_Config: LAPE_Config,
             config_timeSlider: config_timeSlider,
-            config_indicator_bargraph: config_indicator_bargraph
+            config_indicator_bargraph: config_indicator_bargraph,
+            config_indicator_linegraph: config_indicator_linegraph
         });
 
     });

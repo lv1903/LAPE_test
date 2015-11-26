@@ -19,7 +19,10 @@ window.onload = function() {
     timeSlider = new TimeSlider(config_timeSlider);
 
     barGraph = new BarGraph(config_indicator_bargraph, indicator);
-    barGraph._init()
+    barGraph._init();
+
+    lineGraph = new LineGraph(config_indicator_linegraph, indicator);
+    lineGraph._init();
 
 
     //
