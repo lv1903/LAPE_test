@@ -1,12 +1,14 @@
 
 
 
-var Controller = function(data, config){
+var Controller = function(data, density_data, topjson_data, config){
 
-    console.log(data)
+    //console.log(data)
 
     this._config = config;
-    this._data = data
+    this._data = data;
+    this.density_data = density_data;
+    this.topojson_data = topojson_data;
     this._current_period = 2012; //???set in config
     this._init_dimensions(data);
 

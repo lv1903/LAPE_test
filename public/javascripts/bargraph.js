@@ -49,7 +49,8 @@ BarGraph.prototype._build_graph = function(){
 
 
     var full_width = parseInt(d3.select(config.container_id).style("width"), 10);
-    var full_height = Math.max(full_width /2, 400);
+    //var full_height = parseInt(d3.select(config.container_id).style("height"), 10);
+    var full_height = Math.max(2*full_width/5, 400);
 
     config.margin.left = Math.max(100, full_width /4);  //here
     //config.margin.left = 300

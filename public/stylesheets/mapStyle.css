@@ -1,0 +1,7 @@
+.land {
+    fill: lightsteelblue;
+}
+.boundary {
+    fill: none;
+    stroke: #999;
+}

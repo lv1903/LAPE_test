@@ -19,8 +19,104 @@ app.use(bodyParser.json({limit: (5*1024*1000) }));
 var fs = require("fs");
 var http = require("http");
 
-var kernel = require("kernel-smooth")
+var topojson = require("topojson");
 
+var kernel = require("kernel-smooth");
+
+
+//geojson query
+//http://q.nqminds.com/v1/datasets/NyZwkX8Z4x/data?filter={%22properties.CCG15CD%22:{%22$in%22:[%22E38000045%22,%22E38000059%22]}}
+
+
+function getGeoJsonFromTBX(arr){
+
+}
+
+
+
+function getTopoJsons(){
+    //input: object with key for area type
+    // and property as array of entity objects for required boundaries
+    //id is the key for the enitiy objects
+    //output: object with key for area type
+    // and geojson feature collection as property
+
+
+    var geoJsonCollections = {};
+
+    //for(var areaType in obj){
+    //    //get list of entities
+    //    var request_array = [];
+    //    for(var i in obj[areaType]){
+    //        request_array.push(obj[areaType][i][id]);
+    //    }
+    //    console.log(request_array)
+    //}
+
+    var request_array =  [
+                            "E38000120",
+                            "E38000059",
+                            "E38000087",
+                            "E38000137",
+                            "E38000154",
+                            "E38000167",
+                            "E38000198",
+                            "E38000045",
+                            "E38000118",
+                            "E38000206"
+                        ];
+
+    //var request_array =  [
+    //    "E38000120",
+    //    "E38000059"
+    //];
+
+    var string_request_array = JSON.stringify(request_array)
+
+
+    var apiPath = '/v1/datasets/NyZwkX8Z4x/data?filter={"properties.CCG15CD":{"$in":' + string_request_array + '}}';
+    console.log(apiPath)
+
+    var options = {
+        host: 'q.nqminds.com',
+        path: apiPath
+    };
+
+    console.log("request data")
+    nqm_tbx_query(options, function(body){
+
+        var features = JSON.parse(body).data;
+
+        //combine features into feature collection
+        var collection = {
+            "type": "FeatureCollection",
+            "features": []
+
+        };
+        for(var i in features){
+            collection.features.push(features[i])
+        }
+        //console.log(collection)
+
+        geoJsonCollections.CCG = collection
+
+        var qVal = 1e3;
+        var sVal = 1e-3;
+
+
+        var topology = topojson.topology({collection: collection});
+        var topology = topojson.simplify(topology, {"coordinate-system":"cartesian", "quantization":qVal, "minimum-area": sVal});
+
+
+        topojson_obj = {"CCG": topology}
+
+        console.log("got topojson")
+
+    });
+
+}
+var topojson_obj;
+getTopoJsons();
 
 function getSubsetList(areaType){
     var obj = LAPE_Config.areaList[areaType];
@@ -46,9 +142,28 @@ function getSubset(allObj, subsetList){
 
 function getDensityObj(allObj, split_field, value_field){
 
+    console.log(allObj.length)
+
+    //get max value
+    var max_x = 0;
+    for(var i in allObj){
+        if(allObj[i][value_field] > max_x){ max_x = allObj[i][value_field]}
+    }
+
+    console.log(max_x)
+
+    //create x_arr
+    var x_arr = []
+    for(var i = 0; i <=  max_x; i++){
+        x_arr.push(i);
+    };
+
+
     //split the data into arrays (eg. one for each year)
     var splitObj = {};
     for(var i in allObj){
+
+
         var year = allObj[i][split_field];
         if(!splitObj.hasOwnProperty(year)){
             splitObj[year] = [];
@@ -57,16 +172,9 @@ function getDensityObj(allObj, split_field, value_field){
     }
 
     //for each array in split obj get datum for density function
-    var densityObj = {};
+    var densityObj = [];
     for(var year in splitObj){
         var arr = splitObj[year];
-
-
-        //create array of integer x points
-        var x_arr = []
-        for(var i = Math.floor(Math.min.apply(null, arr) - 1); i < Math.ceil(Math.max.apply(null, arr) +1); i++){
-            x_arr.push(i);
-        };
 
         var bandwidth = 5;
         var kde = kernel.density(arr, kernel.fun.epanechnikov, bandwidth);
@@ -74,20 +182,21 @@ function getDensityObj(allObj, split_field, value_field){
 
 
         //combine the arrays
-        var combine_arr = [];
         var combine_obj;
         for(var i = 0; i < x_arr.length; i++){
             combine_obj = {};
             combine_obj.x = x_arr[i];
             combine_obj.density = density_arr[i]
-            combine_arr.push(combine_obj)
+            combine_obj["Map Period"] = year
+            densityObj.push(combine_obj)
         }
-        densityObj[year] = combine_arr;
     }
     return densityObj
 }
 
-function nqm_render_query(options, subsetList, callback){
+function nqm_tbx_query(options, callback){
+    //requests data from tbx and returns body string
+
     var req = http.get(options, function(res) {
         //console.log('STATUS: ' + res.statusCode);
         //console.log('HEADERS: ' + JSON.stringify(res.headers));
@@ -99,16 +208,18 @@ function nqm_render_query(options, subsetList, callback){
         }).on('end', function() {
             var body = Buffer.concat(bodyChunks);
 
-            //extract the subset list for the area you require
-            var allObj = JSON.parse(body).data;
-            var subsetObj = getSubset(allObj, subsetList);
+            ////extract the subset list for the area you require
+            //var allObj = JSON.parse(body).data;
+            //var subsetObj = getSubset(allObj, subsetList);
+            //
+            ////get array for density function
+            //var splitBy = "Map Period";
+            //var value = "Value"
+            //var densityObj = getDensityObj(allObj, splitBy, value);
 
-            //get array for density function
-            var splitBy = "Map Period";
-            var value = "Value"
-            var densityObj = getDensityObj(allObj, splitBy, value);
+            //callback(subsetObj, densityObj)
 
-            callback(subsetObj, datumObj)
+            callback(body)
         })
     });
     req.on('error', function(e) {
@@ -124,27 +235,15 @@ var config_timeSlider = require("./configs/config_timeSlider.json");
 
 var config_indicator_bargraph = require("./configs/config_indicator_bar_graph.json");
 var config_indicator_linegraph = require("./configs/config_indicator_line_graph.json");
+var config_indicator_mapD3 = require("./configs/config_indicator_map_d3.json");
+
 
 
 app.get('/', function(req, res){
 
-    var options = {
-        host: 'q.nqminds.com',
-        path: '/v1/datasets/V1WDel7dQe/data?filter={%22Area%20Type%22:%22CU%22,%20%22Sex%22:%22Male%22,%20%22Value%22:%223233.02%22}'
-    };
-
-    var view = "index";
-
-    nqm_render_query(options, function(body){
-        var obj = JSON.parse(body).data;
-        res.render(view, {
-            title: view,
-            data_obj: obj//,
-            //LAPE_Config: LAPE_Config,
-            //config_timeSlider: config_timeSlider
+        res.render("index", {
+            title: "index"
         });
-
-    });
 
 });
 
@@ -152,7 +251,7 @@ app.get('/', function(req, res){
 
 app.get("/IndicatorReport/:indicator/:areaType/:genderType", function(req, res){
 
-
+    //"get"
 
     var indicator = req.params["indicator"];
 
@@ -177,24 +276,40 @@ app.get("/IndicatorReport/:indicator/:areaType/:genderType", function(req, res){
     var view = "reportIndicator";
 
     console.log("request data")
-    nqm_render_query(options, subsetList, function(obj){
+    nqm_tbx_query(options, function(body){
+
+
+        //extract the subset list for the area you require
+        var allObj = JSON.parse(body).data;
+        var data_obj = getSubset(allObj, subsetList);
+
+        //get array for density function
+        var splitBy = "Map Period";
+        var value = "Value"
+        var density_obj = getDensityObj(allObj, splitBy, value);
+
+
         console.log("render reportIndicator");
         res.render(view, {
             title: view,
+            topojson_obj: topojson_obj[areaType],
             indicator: indicator,
             genderType: genderType,
             areaType: areaType,
-            data_obj: obj,
+            data_obj: data_obj,
+            density_obj: density_obj,
+
             LAPE_Config: LAPE_Config,
             config_timeSlider: config_timeSlider,
             config_indicator_bargraph: config_indicator_bargraph,
-            config_indicator_linegraph: config_indicator_linegraph
+            config_indicator_linegraph: config_indicator_linegraph,
+            config_indicator_mapD3: config_indicator_mapD3
         });
 
     });
 });
 
-app.get("/AreaReport/:genderType", function(req, res){
+app.get("/AreaReport/:Area/:genderType", function(req, res){
 
     var genderType = req.params["genderType"]
 
@@ -234,5 +349,5 @@ app.get("/CompareAreas", function(req, res){
 });
 
 
-
+console.log("ready")
 app.listen(3010);
