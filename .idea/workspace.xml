@@ -36,8 +36,8 @@
       <file leaf-file-name="linegraph.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/public/javascripts/linegraph.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="5.5917087">
-              <caret line="413" column="5" selection-start-line="413" selection-start-column="5" selection-end-line="413" selection-end-column="5" />
+            <state vertical-scroll-proportion="0.5301508">
+              <caret line="448" column="19" selection-start-line="448" selection-start-column="19" selection-end-line="448" selection-end-column="19" />
               <folding />
             </state>
           </provider>
@@ -615,12 +615,12 @@
       <workItem from="1446456886941" duration="12004000" />
       <workItem from="1447776436084" duration="10367000" />
       <workItem from="1448014023161" duration="143183000" />
-      <workItem from="1449229717063" duration="86240000" />
+      <workItem from="1449229717063" duration="87428000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="321721000" />
+    <option name="totallyTimeSpent" value="322909000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-11" y="-11" width="1942" height="1042" extended-state="6" />
@@ -1099,8 +1099,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/public/javascripts/linegraph.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="5.5917087">
-          <caret line="413" column="5" selection-start-line="413" selection-start-column="5" selection-end-line="413" selection-end-column="5" />
+        <state vertical-scroll-proportion="0.5301508">
+          <caret line="448" column="19" selection-start-line="448" selection-start-column="19" selection-end-line="448" selection-end-column="19" />
           <folding />
         </state>
       </provider>

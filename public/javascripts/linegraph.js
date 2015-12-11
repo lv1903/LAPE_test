@@ -182,6 +182,8 @@ LineGraph.prototype._draw_lines = function(){
 
     this.dataNest.forEach(function(d, i){
 
+        var id = d.key
+
         var lines = self._chart_right.append("path")
             .attr("class", "line timeLine")
             .attr("id", "line" + d.key) // assign ID
@@ -189,7 +191,7 @@ LineGraph.prototype._draw_lines = function(){
             .style("stroke", function(){return self._select_color(d.key)})
             .style("stroke-width", function(){return self._select_line_stroke_width(d.key)})
             .style("fill", "none")
-            .on("click", self._line_click.bind(self));
+            .on("click", function() { self._line_click(self, d.key)});
     });
 
     d3.select("#line" + state.current_area).moveToFront();
@@ -440,14 +442,14 @@ d3.selection.prototype.moveToFront = function() {
 };
 
 
-LineGraph.prototype._line_click = function(d){
+LineGraph.prototype._line_click = function(self, id){
 
     //var self = this;
 
-    console.log(d)
+    console.log(id)
 
-    var config = this.config;
-    controller._area_change(d[config.id_field]);
+    var config = self.config;
+    controller._area_change(id);
 
 };
 
