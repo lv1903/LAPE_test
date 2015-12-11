@@ -1,3 +1,6 @@
 {
-  "container": "#timeSliderItem"
+  "container_id": "#timeSliderItem",
+  "margin": {"top": 40, "right": 30, "bottom": 60, "left": 30}
+
+
 }

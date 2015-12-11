@@ -75,7 +75,7 @@ function getTopoJsons(){
 
 
     var apiPath = '/v1/datasets/NyZwkX8Z4x/data?filter={"properties.CCG15CD":{"$in":' + string_request_array + '}}';
-    console.log(apiPath)
+    //console.log(apiPath)
 
     var options = {
         host: 'q.nqminds.com',
@@ -103,14 +103,19 @@ function getTopoJsons(){
         var qVal = 1e3;
         var sVal = 1e-3;
 
+        var id = "CCG15CD";//needs to go in config file
 
-        var topology = topojson.topology({collection: collection});
+
+        var topology = topojson.topology({collection: collection},
+                                            {"property-transform":function(feature) {return {"id": feature.properties[id]} ;}}//,
+                                            //{"id":function(feature){return feature.properties.CCG15CD;}}
+        );
         var topology = topojson.simplify(topology, {"coordinate-system":"cartesian", "quantization":qVal, "minimum-area": sVal});
 
 
         topojson_obj = {"CCG": topology}
 
-        console.log("got topojson")
+        //console.log("got topojson")
 
     });
 
@@ -119,14 +124,14 @@ var topojson_obj;
 getTopoJsons();
 
 function getSubsetList(areaType){
-    var obj = LAPE_Config.areaList[areaType];
+    var obj = config_obj.LAPE_Config.areaList[areaType];
     var subsetList = [];
     for(var i in obj){subsetList.push(obj[i].id);}
     return subsetList
 }
 
 function getIndicatorMapped(indicator){
-    return encodeURIComponent(LAPE_Config.indicatorMapping[indicator]);
+    return encodeURIComponent(config_obj.LAPE_Config.indicatorMapping[indicator]);
 }
 
 
@@ -142,7 +147,7 @@ function getSubset(allObj, subsetList){
 
 function getDensityObj(allObj, split_field, value_field){
 
-    console.log(allObj.length)
+    //console.log(allObj.length)
 
     //get max value
     var max_x = 0;
@@ -150,7 +155,7 @@ function getDensityObj(allObj, split_field, value_field){
         if(allObj[i][value_field] > max_x){ max_x = allObj[i][value_field]}
     }
 
-    console.log(max_x)
+    //console.log(max_x)
 
     //create x_arr
     var x_arr = []
@@ -176,7 +181,7 @@ function getDensityObj(allObj, split_field, value_field){
     for(var year in splitObj){
         var arr = splitObj[year];
 
-        var bandwidth = 5;
+        var bandwidth = max_x / 5;
         var kde = kernel.density(arr, kernel.fun.epanechnikov, bandwidth);
         var density_arr = kde(x_arr);
 
@@ -192,6 +197,23 @@ function getDensityObj(allObj, split_field, value_field){
         }
     }
     return densityObj
+}
+
+
+function getOrderedListObj(allObj, split_field, value_field){
+
+    //returns object of ordered arrays of values - to be used for calculating quintiles etc.
+
+    var splitObj = {};
+    for(var i in allObj){
+        var year = allObj[i][split_field];
+        if(!splitObj.hasOwnProperty(year)){
+            splitObj[year] = [];
+        }
+        splitObj[year].push(allObj[i][value_field])
+    };
+    return splitObj
+
 }
 
 function nqm_tbx_query(options, callback){
@@ -230,12 +252,18 @@ function nqm_tbx_query(options, callback){
 
 
 
-var LAPE_Config = require("./configs/LAPE_Config.json");
-var config_timeSlider = require("./configs/config_timeSlider.json");
+var config_obj = {};
 
-var config_indicator_bargraph = require("./configs/config_indicator_bar_graph.json");
-var config_indicator_linegraph = require("./configs/config_indicator_line_graph.json");
-var config_indicator_mapD3 = require("./configs/config_indicator_map_d3.json");
+config_obj.LAPE_Config = require("./configs/LAPE_Config.json");
+
+console.log("here")
+
+config_obj.config_timeSlider = require("./configs/config_timeSlider.json");
+
+config_obj.congig_indicator_text = require("./configs/config_indicator_text.json");
+config_obj.config_indicator_bargraph = require("./configs/config_indicator_bar_graph.json");
+config_obj.config_indicator_linegraph = require("./configs/config_indicator_line_graph.json");
+config_obj.config_indicator_mapD3 = require("./configs/config_indicator_map_d3.json");
 
 
 
@@ -251,21 +279,23 @@ app.get('/', function(req, res){
 
 app.get("/IndicatorReport/:indicator/:areaType/:genderType", function(req, res){
 
-    //"get"
+   //console.log("here")
 
-    var indicator = req.params["indicator"];
+    var state_obj = {};
+
+    state_obj.indicator = req.params["indicator"];
 
     //console.log(indicator)
 
-    var areaType = req.params["areaType"];
-    var genderType = req.params["genderType"];
+    state_obj.areaType = req.params["areaType"];
+    state_obj.genderType = req.params["genderType"];
 
-    var subsetList = getSubsetList(areaType);
+    var subsetList = getSubsetList(state_obj.areaType);
     //console.log(subsetList)
 
-    var indicatorMapped = getIndicatorMapped(indicator);
+    var indicatorMapped = getIndicatorMapped(state_obj.indicator);
 
-    var apiPath = '/v1/datasets/41WGoeXhQg/data?opts={"limit":10000}&filter={"Indicator":"' + indicatorMapped + '","Area%20Type":"' + areaType + '","Sex":"' + genderType + '"}';
+    var apiPath = '/v1/datasets/41WGoeXhQg/data?opts={"limit":10000}&filter={"Indicator":"' + indicatorMapped + '","Area%20Type":"' + state_obj.areaType + '","Sex":"' + state_obj.genderType + '"}';
     //console.log(apiPath)
 
     var options = {
@@ -279,31 +309,45 @@ app.get("/IndicatorReport/:indicator/:areaType/:genderType", function(req, res){
     nqm_tbx_query(options, function(body){
 
 
+
+        var data_obj = {};
+
         //extract the subset list for the area you require
         var allObj = JSON.parse(body).data;
-        var data_obj = getSubset(allObj, subsetList);
+        data_obj.data = getSubset(allObj, subsetList);
 
         //get array for density function
         var splitBy = "Map Period";
-        var value = "Value"
-        var density_obj = getDensityObj(allObj, splitBy, value);
+        var value = "Value";
+
+        data_obj.density_obj = getDensityObj(allObj, splitBy, value);
+        data_obj.orderedList_obj = getOrderedListObj(allObj, splitBy, value);
+        data_obj.topojson_obj = topojson_obj[state_obj.areaType]
 
 
         console.log("render reportIndicator");
+
         res.render(view, {
             title: view,
-            topojson_obj: topojson_obj[areaType],
-            indicator: indicator,
-            genderType: genderType,
-            areaType: areaType,
-            data_obj: data_obj,
-            density_obj: density_obj,
 
-            LAPE_Config: LAPE_Config,
-            config_timeSlider: config_timeSlider,
-            config_indicator_bargraph: config_indicator_bargraph,
-            config_indicator_linegraph: config_indicator_linegraph,
-            config_indicator_mapD3: config_indicator_mapD3
+            state_obj: state_obj,
+            //indicator: indicator,
+            //genderType: genderType,
+            //areaType: areaType,
+
+            data_obj: data_obj,
+
+            //topojson_obj: topojson_obj[areaType],
+            //density_obj: density_obj,
+            //orderedList_obj: orderedList_obj,
+
+            config_obj: config_obj
+
+            //LAPE_Config: LAPE_Config,
+            //config_timeSlider: config_timeSlider,
+            //config_indicator_bargraph: config_indicator_bargraph,
+            //config_indicator_linegraph: config_indicator_linegraph,
+            //config_indicator_mapD3: config_indicator_mapD3
         });
 
     });

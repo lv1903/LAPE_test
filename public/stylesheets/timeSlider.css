@@ -1,40 +1,27 @@
-/*body {*/
-    /*background-color: #393939;*/
-    /*font-size: 14px;*/
-    /*font-family: 'Raleway', sans-serif;*/
-/*}*/
 
-/*p {*/
-    /*color: white;*/
-    /*margin: 50px;*/
-/*}*/
-
-/*a {*/
-    /*color: #4FDEF2;*/
-/*}*/
 
 .slider .axis {
-    fill: gray;
+    fill: #ffe166;
     -webkit-user-select: none;
     -moz-user-select: none;
     user-select: none;
 }
 
 .axis .halo {
-    stroke: gray;
+    stroke: #ffcd00;
     stroke-width: 4px;
     stroke-linecap: round;
 }
 
 .slider .handle path {
-    stroke: black;
-    stroke-width: 3px;
+    stroke: white;
+    stroke-width: 4px;
     stroke-linecap: round;
     pointer-events: none;
 }
 
 .slider .handle text {
-    fill: black;
+    fill: white;
     text-align: center;
-    font-size: 18px;
+    font-size: 1.5em;
 }

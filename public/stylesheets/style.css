@@ -1,60 +1,93 @@
 body {
   padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-}
-
-a {
-  color: #00B7FF;
-}
-
-
-#headerRow{
-  padding-top: 30px;
-  height: 200px;
-}
-
-#headerContainer {
-  height: 200px;
-
-}
-
-.widgetHeaderContainer, .widgetContainer{
-
-  margin: 10px;
-  border-width: 3px;
-  border-color: black;
-  border: black;
-
-
-}
-
-.widgetHeaderContainer{
-
-  min-width: 600px;
-  min-height: 200px;
-
-  background: lightsteelblue;
-
-
-}
-
-.widgetContainer{
-  min-width: 600px;
-  min-height: 500px;
-
-  background: lightsteelblue;
+  font: 14px "Calibri"
+  /*font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;*/
+  /*color: white;*/
 }
 
 
-/*FLEXBOX*/
-
-.flex-container {
-  display: -webkit-flex; /* Safari */
-  display: flex;
-
-  -webkit-flex-direction: row; /* Safari */
-  flex-direction:         row;
-
-  -webkit-flex-wrap: wrap; /* Safari */
-  flex-wrap:         wrap;
+.contentContainer{
+  padding: 35px 15px;
+  /*background-color: red*/
 }
+
+
+.widget {
+  background-color: #003da5;
+  color: white;
+}
+
+.axis text {
+  fill: white;
+  /*stroke: white;*/
+
+}
+
+.x-label {
+  fill: white;
+}
+
+.color2 {
+  fill:  #ffe166;
+}
+
+
+/*line graph*/
+.densityLine, .timeLine {
+  stroke: #ffe166;
+  /*stroke: white;*/
+  stroke-width: 1;
+
+
+}
+
+.densityArea, .dots {
+  fill: #ffe166;
+}
+
+
+/*.dots {*/
+  /*fill: white;*/
+  /**/
+/*}*/
+
+
+/*map*/
+
+.feature {
+
+  stroke: #003da5;
+
+}
+
+
+
+
+
+
+
+
+
+
+/*gauge*/
+
+
+#indicator_gauge g.arc {
+  fill: steelblue;
+}
+
+#indicator_gauge g.pointer {
+  fill: #9b26b6;
+  stroke:  #2d2926;
+}
+
+#indicator_gauge g.label text {
+  text-anchor: middle;
+  font-size: 1em;
+  font-weight: bold;
+  fill: #fff;
+}
+
+
+
+

@@ -1,6 +1,6 @@
 {
 
-  "container_id": "#linegraphItem",
+  "container_id": "#textItem",
   "margin": {"top": 40, "right": 30, "bottom": 60, "left": 30},
   "font-size": 14,
 
@@ -8,8 +8,7 @@
 
   "id_field": "Area Code",
   "name_field": "Area Name",
-  "x_field": "Map Period",
-  "y_field": "Value",
+  "value_field": "Value",
   "count_field": "Count"
 
 

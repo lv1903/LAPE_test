@@ -2,25 +2,25 @@ extends layout
 block content
 
     script.
-        var indicator = !{JSON.stringify(indicator)};
-        var genderType = !{JSON.stringify(genderType)};
-        var areaType = !{JSON.stringify(areaType)};
+        //var indicator = !{JSON.stringify(indicator)};
+        //var genderType = !{JSON.stringify(genderType)};
+        //var areaType = !{JSON.stringify(areaType)};
 
-        var data = !{JSON.stringify(data_obj)};
-        var density_data = !{JSON.stringify(density_obj)};
-        var topojson_data = !{JSON.stringify(topojson_obj)};
+        //var data = !{JSON.stringify(data_obj)};
+        //var density_data = !{JSON.stringify(density_obj)};
+        //var orderedList_data = !{JSON.stringify(orderedList_obj)};
+        //var topojson_data = !{JSON.stringify(topojson_obj)};
 
-        var LAPE_Config = !{JSON.stringify(LAPE_Config)}; //should these go in public?
-        var config_timeSlider = !{JSON.stringify(config_timeSlider)};
-        var config_indicator_bargraph = !{JSON.stringify(config_indicator_bargraph)};
-        var config_indicator_linegraph = !{JSON.stringify(config_indicator_linegraph)};
-        var config_indicator_mapD3 = !{JSON.stringify(config_indicator_mapD3)};
-
-        var xyz = "something";
+        //var LAPE_Config = !{JSON.stringify(LAPE_Config)}; //should these go in public?
+        //var config_timeSlider = !{JSON.stringify(config_timeSlider)};
+        //var config_indicator_bargraph = !{JSON.stringify(config_indicator_bargraph)};
+        //var config_indicator_linegraph = !{JSON.stringify(config_indicator_linegraph)};
+        //var config_indicator_mapD3 = !{JSON.stringify(config_indicator_mapD3)};
 
     script(src="/javascripts/controller.js")
 
     script(src="/javascripts/timeSlider.js")
+    script(src="/javascripts/indicatortext.js")
     script(src="/javascripts/bargraph.js")
     script(src="/javascripts/linegraph.js")
     script(src="/javascripts/mapd3.js")
@@ -29,18 +29,27 @@ block content
     script(src="/javascripts/init.js")
 
 
+    .flex-container
+        .flex-item.full_height#textItem
+        .flex-item.full_height#mapD3Item
+        .flex-item.full_height#bargraphItem
+        .flex-item.full_height#linegraphItem
+        .flex-item.full_height#timeSliderItem
+        .flex-item.full_height#datesItem
 
-    .flex-group.indicator_group
-        .flex-container.indicator_container.full_width.half_height
-            .flex-item
-                h2 #{indicator} (#{genderType})
-                h3 Indicator report: #{areaType} in Wessex
-            .flex-item#timeSliderItem
-        .flex-container.indicator_container.full_width.full_height
-            .flex-item
-                p #{genderType}
-                p The average #{indicator} in Wessex for #{genderType} is #{xyz}
-            .flex-item#mapD3Item
-        .flex-container.indicator_container.full_width.full_height
-            .flex-item#bargraphItem
-            .flex-item#linegraphItem
+
+
+    //.flex-group.indicator_group
+    //    .flex-container.indicator_container.full_width.half_height
+    //        .flex-item
+    //            h2 #{indicator} (#{genderType})
+    //            h3 Indicator report: #{areaType} in Wessex
+    //        .flex-item#timeSliderItem
+    //    .flex-container.indicator_container.full_width.full_height
+    //        .flex-item
+    //            p #{genderType}
+    //            p The average #{indicator} in Wessex for #{genderType} is #{xyz}
+    //        .flex-item#mapD3Item
+    //    .flex-container.indicator_container.full_width.full_height
+    //        .flex-item#bargraphItem
+    //        .flex-item#linegraphItem

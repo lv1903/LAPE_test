@@ -1,24 +1,19 @@
-function LineGraph(config, indicator) {
-    this._config = config;
-    this.indicator = indicator;
+function LineGraph(config) {
+
+    this.config = config;
+    this._init();
 
 }
 
 LineGraph.prototype._init = function(){
 
-
-
     console.log("init line graph");
 
-    this.data = controller._data;
-    this._dataNest = this._nestData(this.data, this._config.id_field);
+    this.data = controller.data;
+    this.dataNest = this._nestData(this.data, this.config.id_field);
 
     this.density_data = controller.density_data;
-    this._densityDataNest = this._nestData(this.density_data, this._config.x_field);
-
-    //console.log(this._densityDataNest)
-
-    //console.log(this._dataNest)//["E38000045"])
+    this.densityDataNest = this._nestData(this.density_data, this.config.x_field);
 
     this._build_graph();
     this._set_scales();
@@ -26,40 +21,64 @@ LineGraph.prototype._init = function(){
     this._draw_lines();
     this._draw_points();
     this._draw_density_line();
+    this._draw_header();
+
+    this._bindEvents();
 
 };
 
 
-
 LineGraph.prototype._build_graph = function(){
 
+    validate_NaN_to_0 = this.validate_NaN_to_0;
 
-    var config = this._config;
 
-    var full_width = parseInt(d3.select(config.container_id).style("width"), 10);
+    var config = this.config;
+
+    var full_width = 500;
+    var full_height = 250;
+
+
+    //var full_width = parseInt(d3.select(config.container_id).style("width"), 10);
     //var full_height = parseInt(d3.select(config.container_id).style("height"), 10);
-    var full_height = Math.max(2*full_width/5, 400);
+    //var full_height = full_width/2;
 
+    //config.margin.left = Math.max(100, full_width /4);  //here
+    //config.margin.left = 300
 
-    this.width =  full_width - config.margin.left - config.margin.right;
+    config.middle = full_width / 2;
+
+    config.margin.middle = config.margin.left / 4;
+
+    this.width =  config.middle - config.margin.left  - config.margin.middle;
     this.height = full_height - config.margin.bottom - config.margin.top;
-
-    config.margin.middle = config.margin.left + this.width /3;
 
     //console.log(this.width + " x " + this.height)
 
 
+    //this._svg = d3.select(config.container_id)
+    //    .append("svg")
+    //    .attr("class", "widget")
+    //    .attr("width", full_width)
+    //    .attr("height", full_height);
+
     this._svg = d3.select(config.container_id)
+        .append("div")
+        .classed("svg-container", true)
         .append("svg")
         .attr("class", "widget")
-        .attr("width", full_width)
-        .attr("height", full_height);
+        .attr("preserveAspectRatio", "xMinYMin meet")
+        .attr("viewBox", "0 0 " + full_width + " " + full_height )
+        .classed("svg-content-responsive", true)
 
-    this._chart = this._svg
+    this._chart_left = this._svg
         .append('g')
-        .attr("transform", "translate(" + (config.margin.left)  +  "," + config.margin.top + ")");
+        .attr("transform", "translate(" + config.margin.left + "," + config.margin.top + ")");
 
 
+    this._chart_right = this._svg
+        .append('g')
+        .attr("transform", "translate(" + (config.middle + config.margin.middle) + "," + config.margin.top + ")");
 
 
 };
@@ -68,38 +87,33 @@ LineGraph.prototype._build_graph = function(){
  LineGraph.prototype._set_scales = function(){
 
  var self = this;
- var config = this._config;
+ var config = this.config;
 
  //config.margin.left = 50;
 
  //calcualate constant origin shift
- this._period_arr = this._list(data, config.x_field);
+ this._period_arr = this._list(self.data, config.x_field);
  var origin_shift_xLine = 10;
- var origin_shift_xDensity = 2;
- var tick_width = self.width / (this._period_arr.length - 1);
+
+ var tick_width_xLine = self.width / (this._period_arr.length - 1);
+
+ //var tick_width_xDensity =  d3.max(self.density_data, function(d) { return +d["density"]})/ config.margin.middle ;
+ //var origin_shift_xDensity = 50;
+
 
 
  this.xLine = d3.scale.linear()
      .range([config.margin.middle, this.width])
-     .domain([-(origin_shift_xLine/tick_width), this._period_arr.length - 1]);
-
-     //console.log("densityMax")
-     //console.log(d3.max(self.density_data, function(d) { return +d["density"]}))
+     .domain([-(origin_shift_xLine/tick_width_xLine), this._period_arr.length - 1]);
 
  this.xDensity = d3.scale.linear()
-     .range([config.margin.middle, 0])
-     .domain([-(origin_shift_xDensity/tick_width), d3.max(self.density_data, function(d) { return +d["density"]})]) //??"density" should be in config file
-     //.domain([0, d3.max(self.density_data, function(d) { return +d["density"]})]) //??"density" should be in config file
-
-    //console.log(config.margin.middle + " " + this.xDensity(0.107))
-    //console.log(config.margin.middle + " " + this.xDensity(0))
-
+     .range([this.width - config.margin.middle * 4, 0.1 * this.width])
+     .domain([0, d3.max(self.density_data, function(d) { return +d["density"]})]) //??"density" should be in config file
 
 
  this.y = d3.scale.linear()
      .range([0, this.height])
      .domain([ d3.max(self.density_data, function(d) { return +d["x"]}), 0]);//??"x" should be in config file (density graph sideways so y is called x)
-
 
  };
 
@@ -107,7 +121,7 @@ LineGraph.prototype._build_graph = function(){
 
  LineGraph.prototype._draw_axes = function(){
 
-     var config = this._config;
+     var config = this.config;
      var self = this;
 
      this.xAxisLine = d3.svg.axis()
@@ -131,135 +145,219 @@ LineGraph.prototype._build_graph = function(){
          .outerTickSize(0);
 
 
-     this._chart.append("g")
+     this._chart_right.append("g")
          .attr("class", "x axis")
          .attr("transform", "translate(0," + this.height + ")")
          .call(this.xAxisLine);
 
 
-     this._chart.append("g")
+     this._chart_right.append("g")
          .attr("class", "y axis")
          .attr("transform", "translate(" + config.margin.middle +  ", 0)")
          .call(this.yAxis);
 
-    this._chart.append("text")
+     this._chart_right.append("text")
          .attr("class", "x-label")
-         .attr("text-anchor", "start")
-         .attr("x", config.margin.middle)
-         .attr("y", -20)
-         .text(controller._config.indicatorLabels[this.indicator]);
-
-    this._chart.append("text")
-         .attr("class", "x-label")
-         .attr("text-anchor", "start")
-         .attr("x", 0)
-         .attr("y", this.height)
-         .text("Distribution in England");
+         .attr("text-anchor", "end")
+         .attr("x", this.width - 20)
+         .attr("y", this.height + 40)
+         .text("Year");
 
 };
 
 
 LineGraph.prototype._draw_lines = function(){
 
-    var config = this._config;
+    var config = this.config;
     var self = this;
+    var state = controller.state;
 
-    var data = this._data;
-    var dataNest = this._dataNest;
 
     // Define the line
-    var line = d3.svg.line()
+    var fLine = d3.svg.line()
         .defined(function(d) {return !isNaN(d[config.y_field]); })
         .x(function(d, i) {return self.xLine(i);})
         .y(function(d) {return self.y(d[config.y_field]);});
 
 
-    dataNest.forEach(function(d, i){
-        var lines = self._chart.append("path")
-            .attr("class", "line")
+    this.dataNest.forEach(function(d, i){
+
+        var lines = self._chart_right.append("path")
+            .attr("class", "line timeLine")
             .attr("id", "line" + d.key) // assign ID
-            .attr("d", line(d.values))
-            .style("stroke", "lightsteelblue")
-            .style("stroke-width", 2)
-            .style("fill", "none");
+            .attr("d", fLine(d.values))
+            .style("stroke", function(){return self._select_color(d.key)})
+            .style("stroke-width", function(){return self._select_line_stroke_width(d.key)})
+            .style("fill", "none")
+            .on("click", self._line_click.bind(self));
     });
+
+    d3.select("#line" + state.current_area).moveToFront();
+
 };
 
 LineGraph.prototype._draw_points = function(){
-    var self = this
-    var config = this._config;
-    var data = this._data;
-    var dataNest = this._dataNest;
+    var self = this;
+    var config = this.config;
+    var state = controller.state;
 
-    dataNest.forEach(function(d, i){
-        dots = self._chart.selectAll(".dot")
+    this.dataNest.forEach(function(d, i){
+
+        var dots = self._chart_right.selectAll(".timeDot")
             .data(d.values)
             .enter()
             .append("circle")
-            .attr("class", "dot" + d.key)
-            .attr("r", 3)
-            .attr("cx", function(d, i){return self.xLine(i)})
-            .attr("cy", function(d){return self.y(d.Value)})//??from config
-            .style("fill", "lightsteelblue")
-            .style("stroke", "white")
-            .style("stroke-width", 1);
+            .attr("class", "dots" + d.key)
+            .attr("id", "timeDots" + d.key)
+            .attr("cx", function(e, i){return self.xLine(i)})
+            .attr("cy", function(e){return self.y(e[config.y_field])})
+            .style("stroke", "#003da5") //??from config
+            .attr("r", function(){return self._select_dot_radius(d.key)})
+            .style("stroke-width", function(){return self._select_dot_stroke_width(d.key)})
+            .style("fill", function(){return self._select_color(d.key)})
+            .on("click", self._dot_click.bind(self));
     });
+
+    d3.selectAll(".dots" + state.current_area).moveToFront();
+
+
 };
 
 LineGraph.prototype._draw_density_line = function(){
-    var self = this
-    var config = this._config;
-    var data = this._data;
-    var densityDataNest = this._densityDataNest;
-    var year = controller._current_period;
+
+    var self = this;
+    var config = this.config;
+    var data = this.data;
+    //var densityDataNest = this.densityDataNest;
+
+    var state = controller.state;
+
+    //var year = controller._current_period;
     var densityArray;
-    densityDataNest.forEach(function(d, i){
-        if(d.key == year){
+    this.densityDataNest.forEach(function(d, i){
+        if(d.key == state.current_period){
             densityArray = d.values;
         }
      });
 
-
-    ////plotting functions
-    //var fArea = d3.svg.area()
-    //    .y(function(d) { return self.y(d[0]); })
-    //    .x0(0)
-    //    .x1(function(d) { return self.xDensoty(d[1]) - 2; })
-    //    .interpolate("monotone");
-
-    var fArea = d3.svg.area()
+    this.fArea = d3.svg.area()
         .y(function(d) { return self.y(d.x); })
         .x0(function(d) { return self.xDensity(0) })
         .x1(function(d) { return self.xDensity(d.density); })
-        .interpolate("monotone");
-
-    var fLine = d3.svg.line()
-        .y(function(d) { return self.y(d.x); })
-        .x(function(d) { return self.xDensity(d.density); })
         .interpolate("linear");
 
-    var dist_area = this._chart
-        .append("path")
-        .datum(densityArray)
-        .attr("class", "densityArea")
-        .attr("d", fArea)
-        .style("fill", "lightsteelblue");
+    //var fLine = d3.svg.line()
+    //    .y(function(d) { return self.y(d.x); })
+    //    .x(function(d) { return self.xDensity(d.density); })
+    //    .interpolate("linear");
 
-    var dist_path = this._chart
-        .append("path")
+    this._dist_area = this._chart_left
         .datum(densityArray)
-        .attr("class", "desnsityLine")
-        .attr("d", fLine)
-        .style("stroke", "lightsteelblue")
-        .style("stroke-width", 1)
-        .style("fill", "none")
-        //.style("fill", "lightsteelblue")
+        .append("path")
+        .attr("class", "densityArea")
+        .attr("d", this.fArea)
+        //.style("fill", "#BFD8BD");
+
+    //var dist_path = this._chart_left
+    //    .append("path")
+    //    .datum(densityArray)
+    //    .attr("class", "desnsityLine")
+    //    .attr("d", fLine)
+    //    //.style("stroke", "#BFD8BD")
+    //    //.style("stroke-width", 1)
+    //    .style("fill", "none")
+    //    //.style("fill", "lightsteelblue")
 
 
 
 
 };
 
+LineGraph.prototype._draw_header = function(){
+
+    this._header  = this._chart_left.append("text")
+        .attr("x", "0em")
+        .attr("y", "-2.5em" )
+        .attr("dy", "2em")
+        .attr("text-anchor", "left")
+        .style("font-size", "1.5em")
+        .style("fill", "white")
+        .text("Distribution in England");
+
+    this._header  = this._chart_right.append("text")
+        .attr("x", "0em")
+        .attr("y", "-2.5em" )
+        .attr("dy", "2em")
+        .attr("text-anchor", "left")
+        .style("font-size", "1.5em")
+        .style("fill", "white")
+        .text("Change over time");
+
+};
+
+
+
+
+
+LineGraph.prototype._bindEvents = function(){
+
+    ee.addListener('period_change', this._period_change_listener.bind(this));
+    ee.addListener('area_change', this._area_change_listener.bind(this));
+
+};
+
+
+/*------------------transitions---------------------*/
+
+LineGraph.prototype._area_change_listener = function() {
+
+    var self = this;
+    var state = controller.state;
+
+    d3.select("#line" + state.current_area).moveToFront();
+    d3.selectAll(".dots" + state.current_area).moveToFront();
+
+
+    this.dataNest.forEach(function(d, i){
+        var lines = self._chart_right.select("#line" + d.key)
+            .transition()
+            .duration(750)
+            .style("stroke", function(){return self._select_color(d.key)})
+            .style("stroke-width", function(){return self._select_line_stroke_width(d.key)})
+
+    });
+
+    this.dataNest.forEach(function(d, i){
+        var dots = self._chart_right.selectAll(".dots" + d.key)
+            .transition()
+            .duration(750)
+            .attr("r", function(){return self._select_dot_radius(d.key)})
+            .style("stroke-width", function(){return self._select_dot_stroke_width(d.key)})
+            .style("fill", function(){return self._select_color(d.key)});
+    });
+
+
+};
+
+
+LineGraph.prototype._period_change_listener = function() {
+
+    var state = controller.state;
+
+    var densityArray;
+    this.densityDataNest.forEach(function(d, i){
+        if(d.key == state.current_period){
+            densityArray = d.values;
+        }
+    });
+
+    this._dist_area
+        .datum(densityArray)
+        .transition()
+        .duration(750)
+        .attr("d", this.fArea);
+
+};
 
 /*----------functions--------------------*/
 
@@ -284,4 +382,82 @@ LineGraph.prototype._nestData = function(data, nestField){
     return d3.nest()
         .key(function(d){return d[nestField]})
         .entries(data);
+};
+
+
+
+
+LineGraph.prototype._select_color = function(id){
+    var state = controller.state;
+    if(id == state.current_area){ //colors in config file;
+        return "#9b26b6"
+    } else {
+        return "#ffe166"
+    }
+};
+
+LineGraph.prototype._select_line_stroke_width = function(id){
+    var state = controller.state;
+    if(id == state.current_area){ //colors in config file;
+        return 4
+    } else {
+        return 2
+    }
+};
+
+LineGraph.prototype._select_dot_stroke_width = function(id){
+    var state = controller.state;
+    if(id == state.current_area){ //colors in config file;
+        return 2
+    } else {
+        return 1
+    }
+};
+
+LineGraph.prototype._select_dot_radius = function(id){
+    var state = controller.state;
+    if(id == state.current_area){ //colors in config file;
+        return 5
+    } else {
+        return 4
+    }
+};
+
+
+d3.selection.prototype.moveToBack = function() {
+    return this.each(function() {
+        var firstChild = this.parentNode.firstChild;
+        if (firstChild) {
+            this.parentNode.insertBefore(this, firstChild);
+        }
+    });
+};
+
+d3.selection.prototype.moveToFront = function() {
+    return this.each(function(){
+        this.parentNode.appendChild(this);
+    });
+};
+
+
+LineGraph.prototype._line_click = function(d){
+
+    //var self = this;
+
+    console.log(d)
+
+    var config = this.config;
+    controller._area_change(d[config.id_field]);
+
+};
+
+LineGraph.prototype._dot_click = function(d){
+
+    //var self = this;
+
+    console.log(d)
+
+    var config = this.config;
+    controller._area_change(d[config.id_field]);
+
 };

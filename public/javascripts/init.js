@@ -3,32 +3,31 @@
 var changeView;
 var controller;
 
-var ee = new EventEmitter();
+
 
 window.onload = function() {
 
-    console.log(indicator)
+
+    //console.log("********")
+    //
+    //console.log(state_obj)
 
 
     //
     //changeView = new ChangeView();
 
-    controller = new Controller(data, density_data, topojson_data, LAPE_Config);
+    controller = new Controller(data_obj, config_obj.LAPE_Config, state_obj);
+
+    //console.log(config_obj.config_timeSlider)
 
 
-    timeSlider = new TimeSlider(config_timeSlider);
 
+    indicatorText = new IndicatorText(config_obj.congig_indicator_text);
+    mapD3 = new MapD3(config_obj.config_indicator_mapD3);
+    barGraph = new BarGraph(config_obj.config_indicator_bargraph);
+    lineGraph = new LineGraph(config_obj.config_indicator_linegraph);
 
-    barGraph = new BarGraph(config_indicator_bargraph, indicator);
-    barGraph._init();
-
-    lineGraph = new LineGraph(config_indicator_linegraph, indicator);
-    lineGraph._init();
-
-    mapD3 = new MapD3(config_indicator_mapD3, indicator);
-    mapD3._init();
-
-
+    timeSlider = new TimeSlider(config_obj.config_timeSlider);
     //
     ////$('#changeViewModal').modal('show');
     //

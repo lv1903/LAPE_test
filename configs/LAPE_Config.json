@@ -3,7 +3,10 @@
 {
 
   "reportType": ["Area Report", "Indicator Report", "Compare Areas"],
-  "initReportType": ["Area Report"],
+  "initReportType": "Area Report",
+  "defaultArea": "Wessex",
+  "defaultPeriod": 2012,
+
 
   "filter": [
     {
@@ -35,6 +38,19 @@
 
   ],
 
+  "areaTypeMapping":{
+    "CCG": "CCGs",
+    "CU": "Counties",
+    "DU": "Districts"
+
+  },
+
+  "genderMapping":{
+    "Male": "males",
+    "Female": "females",
+    "Persons": ""
+  },
+
   "indicatorMapping":{
     "Mortality from chronic liver disease": "3.01 - Mortality from chronic liver disease",
     "Alcohol-specific mortality": "2.01 - Alcohol-specific mortality",
@@ -49,51 +65,61 @@
     "Admission episodes for alcohol-related conditions": "per 100,000"
   },
 
+
+  "indicatorText":{
+    "Mortality from chronic liver disease": "per 100,000",
+    "Alcohol-specific mortality": "per 100,000",
+    "Months of life lost due to alcohol": "Months of life lost",
+    "Admission episodes for alcohol-related conditions": "per 100,000"
+
+
+  },
+
   "areaList": {
 
     "CU": [
-      {"id":"E10000014"," name":"Hampshire"},
-      {"id":"E10000009"," name":"Dorset"},
-      {"id":"E06000054"," name":"Wiltshire"},
-      {"id":"E06000044"," name":"Portsmouth"},
-      {"id":"E06000045"," name":"Southampton"},
-      {"id":"E06000046"," name":"Isle of Wight"}
+      {"id":"E10000014","name":"Hampshire","short_name":"Hampshire"},
+      {"id":"E10000009","name":"Dorset","short_name":"Dorset"},
+      {"id":"E06000054","name":"Wiltshire","short_name":"Wiltshire"},
+      {"id":"E06000044","name":"Portsmouth","short_name":"Portsmouth"},
+      {"id":"E06000045","name":"Southampton","short_name":"Soton"},
+      {"id":"E06000046","name":"Isle of Wight","short_name":"Isle Wight"}
+
     ],
 
     "DU": [
-      {"id":"E07000048"," name":"Christchurch"},
-      {"id":"E07000049"," name":"East Dorset"},
-      {"id":"E07000050"," name":"North Dorset"},
-      {"id":"E07000051"," name":"Purbeck"},
-      {"id":"E07000052"," name":"West Dorset"},
-      {"id":"E07000053"," name":"Weymouth and Portland"},
-      {"id":"E07000084"," name":"Basingstoke and Deane"},
-      {"id":"E07000085"," name":"East Hampshire"},
-      {"id":"E07000086"," name":"Eastleigh"},
-      {"id":"E07000087"," name":"Fareham"},
-      {"id":"E07000088"," name":"Gosport"},
-      {"id":"E07000089"," name":"Hart"},
-      {"id":"E07000090"," name":"Havant"},
-      {"id":"E07000091"," name":"New Forest"},
-      {"id":"E07000092"," name":"Rushmoor"},
-      {"id":"E07000093"," name":"Test Valley"},
-      {"id":"E07000094"," name":"Winchester"},
-      {"id":"E06000044"," name":"Portsmouth"},
-      {"id":"E06000045"," name":"Southampton"},
-      {"id":"E06000046"," name":"Isle of Wight"}
+      {"id":"E07000048","name":"Christchurch","short_name":"Chrstchrch"},
+      {"id":"E07000049","name":"East Dorset","short_name":"E Dorset"},
+      {"id":"E07000050","name":"North Dorset","short_name":"N Dorset"},
+      {"id":"E07000051","name":"Purbeck","short_name":"Purbeck"},
+      {"id":"E07000052","name":"West Dorset","short_name":"W Dorset"},
+      {"id":"E07000053","name":"Weymouth and Portland","short_name":"Wmth Prtln"},
+      {"id":"E07000084","name":"Basingstoke and Deane","short_name":"Bstke Dn"},
+      {"id":"E07000085","name":"East Hampshire","short_name":"E Hampshire"},
+      {"id":"E07000086","name":"Eastleigh","short_name":"Eastleigh"},
+      {"id":"E07000087","name":"Fareham","short_name":"Fareham"},
+      {"id":"E07000088","name":"Gosport","short_name":"Gosport"},
+      {"id":"E07000089","name":"Hart","short_name":"Hart"},
+      {"id":"E07000090","name":"Havant","short_name":"Havant"},
+      {"id":"E07000091","name":"New Forest","short_name":"New Forest"},
+      {"id":"E07000092","name":"Rushmoor","short_name":"Rushmoor"},
+      {"id":"E07000093","name":"Test Valley","short_name":"TestValley"},
+      {"id":"E07000094","name":"Winchester","short_name":"Winchester"}
+
     ],
 
     "CCG": [
-      {"id":"E38000120"," name":"NORTH HAMPSHIRE"},
-      {"id":"E38000059"," name":"FAREHAM AND GOSPORT"},
-      {"id":"E38000087"," name":"ISLE OF WIGHT"},
-      {"id":"E38000137"," name":"PORTSMOUTH"},
-      {"id":"E38000154"," name":"SOUTH EASTERN HAMPSHIRE"},
-      {"id":"E38000167"," name":"SOUTHAMPTON"},
-      {"id":"E38000198"," name":"WEST HAMPSHIRE"},
-      {"id":"E38000045"," name":"DORSET"},
-      {"id":"E38000118"," name":"NORTH EAST HAMPSHIRE AND FARNHAM"},
-      {"id":"E38000206"," name":"WILTSHIRE"}
+      {"id":"E38000120","name":"North Hampshire","short_name":"N Hants"},
+      {"id":"E38000059","name":"Fareham And Gosport","short_name":"Frhm Gspt "},
+      {"id":"E38000087","name":"Isle of Wight","short_name":"Isle Wght "},
+      {"id":"E38000137","name":"Portsmouth","short_name":"Portsmth "},
+      {"id":"E38000154","name":"South Eastern Hampshire","short_name":"SE Hants"},
+      {"id":"E38000167","name":"Southampton","short_name":"SOTON"},
+      {"id":"E38000198","name":"West Hampshire","short_name":"W Hants "},
+      {"id":"E38000045","name":"Dorset","short_name":"DORSET "},
+      {"id":"E38000118","name":"North East Hampshire And Farnham","short_name":"NE Hants"},
+      {"id":"E38000206","name":"Wiltshire","short_name":"Wiltshire "}
+
 
     ]
 
