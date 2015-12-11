@@ -8,15 +8,7 @@ TimeSlider = function(config){
 
 };
 
-TimeSlider.prototype._bindEvents = function(){
 
-    function slider_change(){
-        console.log("here");
-    }
-
-
-
-};
 
 TimeSlider.prototype._init = function(){
 
@@ -109,6 +101,7 @@ TimeSlider.prototype._define_brush = function(){
         .x(self.x)
         .extent([state.current_period, state.current_period])
         .on("brush", function() {
+
             var value = self.brush.extent()[0];
 
             if (d3.event.sourceEvent) { // not a programmatic event
@@ -117,7 +110,22 @@ TimeSlider.prototype._define_brush = function(){
 
             }
 
-            self.handle.attr("transform", "translate(" + self.x(value) + ",0)");
+            self.handle.attr("transform", "translate(" + self.x(Math.round(value)) + ",0)");
+
+            //console.log(state.current_period + " " + value + " " + Math.round(value))
+
+
+            //d3.select(".handle")
+            //self.handle
+            //    .transition()
+            //    .duration(200)
+            //    .ease("quadin")
+            //    .attr("transform", "translate(" + self.x(value) + ",0)")
+            //    .transition()
+            //    .duration(500)
+            //    .ease("quadout")
+            //    .attr("transform", "translate(" + self.x(Math.round(value)) + ",0)");
+
             self.handle.select('text').text(Math.round(value));
             controller._period_change(Math.round(value));
 
@@ -141,15 +149,18 @@ TimeSlider.prototype._draw_slider = function(){
         .attr("height", self.height);
 
     this.handle = slider.append("g")
-        .attr("class", "handle");
+        .attr("class", "handle")
+        //.on("mouseout", self._snap_handle);
 
     this.handle.append("path")
         .attr("transform", "translate(0," + self.height / 2 + ")")
-        .attr("d", "M 0 -10 V 10");
+        .attr("d", "M 0 -10 V 10")
+        //.on("mouseout", self._snap_handle);
 
     this.handle.append('text')
         .text(self.x(state.current_period))
-        .attr("transform", "translate(" + (-18) + " ," + (self.height / 2 - 15) + ")");
+        .attr("transform", "translate(" + (-18) + " ," + (self.height / 2 - 15) + ")")
+        //.on("mouseout", self._snap_handle);
 
     slider
         .call(self.brush.event)
@@ -157,33 +168,11 @@ TimeSlider.prototype._draw_slider = function(){
 
 };
 
+TimeSlider.prototype._snap_handle = function(){
 
+    console.log("Snap handle")
 
-/*
-
-
- TimeSlider.prototype._init = function(){
-
-     var config = this.config;
-
-     var formatDate = d3.time.format("%Y");
+}
 
 
 
-
-
-
-     var startingValue = controller._current_period;
-
-     var startValue = xScale(startingValue);
-
-
-
-
-
-
-/!*
-*!/
-
- };
-*/

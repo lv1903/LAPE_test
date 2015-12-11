@@ -67,7 +67,7 @@ IndicatorText.prototype._add_text = function(){
 
     this._Text.enter().append("text")
         .attr("x", 0)
-        .attr("y", function(d, i) { return -0.5 + 1.5 * i + "em"})
+        .attr("y", function(d, i) { return 0 + 1.5 * i + "em"})
         .attr("text-anchor", "left")
         .style("font-size", "1.5em")
         .style("fill", "white")

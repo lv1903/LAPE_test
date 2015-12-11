@@ -136,7 +136,7 @@ MapD3.prototype._gauge_header = function(){
         //.append("g")
         //.attr("transform", "translate(" + (config.margin.left)  +  "," + config.margin.top + ")");
         .attr("x", "0em")
-        .attr("y", "-2.5em" )
+        .attr("y", "-2em" )
         .attr("dy", "2em")
         .attr("text-anchor", "left")
         .style("font-size", "1.5em")
@@ -145,7 +145,7 @@ MapD3.prototype._gauge_header = function(){
 
     this._value_text  = this._chart_left.append("text")
         .attr("x", "0em")
-        .attr("y", "-1em" )
+        .attr("y", "-0.5em" )
         .attr("dy", "2em")
         .attr("text-anchor", "left")
         .style("font-size", "1.5em")
@@ -159,7 +159,7 @@ MapD3.prototype._gauge_header = function(){
 
         this._count_text  = this._chart_left.append("text")
             .attr("x", "0em")
-            .attr("y", "0.5em" )
+            .attr("y", "1em" )
             .attr("dy", "2em")
             .attr("text-anchor", "left")
             .style("font-size", "1.5em")

@@ -16,7 +16,8 @@ var Controller = function(data_obj, config, state_obj){
     this.state = state_obj;
 
     this.state.current_period = config.defaultPeriod;
-    this.state.current_area = "E38000118";
+    //this.state.current_area = "E38000118";
+    this.state.current_area = "E38000198";
 
     this.state.current_area_name = this._get_area_name();
 
