@@ -5,7 +5,7 @@
   "reportType": ["Area Report", "Indicator Report", "Compare Areas"],
   "initReportType": "Area Report",
   "defaultArea": "Wessex",
-  "defaultPeriod": 2012,
+  "defaultPeriod": 2013,
 
 
   "filter": [
@@ -48,7 +48,7 @@
   "genderMapping":{
     "Male": "males",
     "Female": "females",
-    "Persons": ""
+    "Persons": "persons"
   },
 
   "indicatorMapping":{
@@ -61,15 +61,21 @@
   "indicatorLabels":{
     "Mortality from chronic liver disease": "per 100,000",
     "Alcohol-specific mortality": "per 100,000",
-    "Months of life lost due to alcohol": "Months of life lost",
+    "Months of life lost due to alcohol": "months of life lost",
     "Admission episodes for alcohol-related conditions": "per 100,000"
+  },
+
+  "genderLabels":{
+    "Male": "males",
+    "Female": "females",
+    "Persons": "persons"
   },
 
 
   "indicatorText":{
     "Mortality from chronic liver disease": "per 100,000",
     "Alcohol-specific mortality": "per 100,000",
-    "Months of life lost due to alcohol": "Months of life lost",
+    "Months of life lost due to alcohol": "months of life lost",
     "Admission episodes for alcohol-related conditions": "per 100,000"
 
 
@@ -114,17 +120,24 @@
       {"id":"E38000087","name":"Isle of Wight","short_name":"Isle Wght "},
       {"id":"E38000137","name":"Portsmouth","short_name":"Portsmth "},
       {"id":"E38000154","name":"South Eastern Hampshire","short_name":"SE Hants"},
-      {"id":"E38000167","name":"Southampton","short_name":"SOTON"},
+      {"id":"E38000167","name":"Southampton","short_name":"Soton"},
       {"id":"E38000198","name":"West Hampshire","short_name":"W Hants "},
-      {"id":"E38000045","name":"Dorset","short_name":"DORSET "},
-      {"id":"E38000118","name":"North East Hampshire And Farnham","short_name":"NE Hants"},
+      {"id":"E38000045","name":"Dorset","short_name":"Dorset "},
+      {"id":"E38000118","name":"North East Hampshire and Farnham","short_name":"NE Hants"},
       {"id":"E38000206","name":"Wiltshire","short_name":"Wiltshire "}
 
 
     ]
 
+  },
 
 
+  "colorScheme" : {
+    "background_color": "#00778b",
+    "main_color": "#d0d0ce",
+    "main_color_offset": "#d0d0ce",
+    "highlight_color": "#ffcd00",
+    "dark_text_color": "#2d2926"
   }
 
 }

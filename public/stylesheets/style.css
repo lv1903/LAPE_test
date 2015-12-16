@@ -5,6 +5,12 @@ body {
   /*color: white;*/
 }
 
+@media (max-width: 1000px) {
+  body {
+    padding: 20px;
+  }
+}
+
 
 .contentContainer{
   padding: 35px 15px;
@@ -13,8 +19,9 @@ body {
 
 
 .widget {
-  background-color: #003da5;
+  background-color: #00778b;
   color: white;
+  border-radius: 2px;
 }
 
 .axis text {
@@ -27,23 +34,23 @@ body {
   fill: white;
 }
 
-.color2 {
-  fill:  #ffe166;
-}
+/*.color2 {*/
+  /*fill:  #ffe166;*/
+/*}*/
 
 
-/*line graph*/
-.densityLine, .timeLine {
-  stroke: #ffe166;
-  /*stroke: white;*/
-  stroke-width: 1;
+/*/!*line graph*!/*/
+/*.densityLine, .timeLine {*/
+  /*stroke: #ffe166;*/
+  /*/!*stroke: white;*!/*/
+  /*stroke-width: 1;*/
 
 
-}
+/*}*/
 
-.densityArea, .dots {
-  fill: #ffe166;
-}
+/*.densityArea, .dots {*/
+  /*fill: #ffe166;*/
+/*}*/
 
 
 /*.dots {*/
@@ -54,15 +61,20 @@ body {
 
 /*map*/
 
-.feature {
+/*.feature {*/
 
-  stroke: #003da5;
+  /*stroke: #003da5;*/
+
+/*}*/
+
+
+
+.clickable {
+
+  cursor: crosshair;
+  cursor: crosshair;
 
 }
-
-
-
-
 
 
 
@@ -72,21 +84,21 @@ body {
 /*gauge*/
 
 
-#indicator_gauge g.arc {
-  fill: steelblue;
-}
+/*#indicator_gauge g.arc {*/
+  /*fill: steelblue;*/
+/*}*/
 
-#indicator_gauge g.pointer {
-  fill: #9b26b6;
-  stroke:  #2d2926;
-}
+/*#indicator_gauge g.pointer {*/
+  /*fill: #9b26b6;*/
+  /*stroke:  #2d2926;*/
+/*}*/
 
-#indicator_gauge g.label text {
-  text-anchor: middle;
-  font-size: 1em;
-  font-weight: bold;
-  fill: #fff;
-}
+/*#indicator_gauge g.label text {*/
+  /*text-anchor: middle;*/
+  /*font-size: 1em;*/
+  /*font-weight: bold;*/
+  /*fill: #fff;*/
+/*}*/
 
 
 

@@ -2,13 +2,37 @@ extends layout
 
 block content
 
-  .flex-container
-      .flex-item.half_height
-      .flex-item.half_height
-      .flex-item.full_height
-      .flex-item.full_height
-      .flex-item.full_height
-      .flex-item.full_height
+  .flex-group
+      .flex-header-container
+          .flex-header-item#headerReportItem
+              select.flex-select#reportTypeSelect
+                  option(value='Indicator Report') Indicator Report:
+                  option(value='Area Report') Area Report:
+                  option(value='Compare Areas') Compare Areas:
+          .flex-header-item#headerIndicatorItem
+              select.flex-select#reportTypeSelect
+                  option(value='Mortality from chronic liver disease') Mortality from chronic liver disease
+                  option(value='Alcohol-specific mortality') Alcohol-specific mortality
+                  option(value='Months of life lost due to alcohol') Months of life lost due to alcohol
+                  option(value='Admission episodes for alcohol-related conditions') Admission episodes for alcohol-related conditions
+          .flex-header-item#headerGenderItem
+              select.flex-select.addFilterSelect#genderTypeSelect
+                  option(value='Female') Females
+                  option(value='Male') Males
+                  option(value='Persons') Persons
+          .flex-header-item#headerAreaTypeItem
+              select.flex-select.addFilterSelect#areaTypeSelect
+                  option(value='DU') Districts and Unitaries
+                  option(value='CCG') CCGs
+                  option(value='CU') Counties and Unitaries
+          .flex-header-item#headerHighlightItem
+              select.flex-select.addFilterSelect#highlightAreaSelect
+                  option(value='North East Hampshire And Farnham') North East Hampshire And Farnham
+                  option(value='North East Hampshire And Farnham') Short
+
+
+      .flex-container
+
 
 
 

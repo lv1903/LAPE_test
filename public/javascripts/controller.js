@@ -58,6 +58,17 @@ Controller.prototype._period_change = function(value){
     ee.emitEvent("period_change")
 };
 
+Controller.prototype._time_slider_change = function(value){
+
+
+
+    this.state.current_period = value;
+    this.periodDimension.filter(this.state.current_period);
+    this.data_period = this.periodDimension.top(Infinity);
+
+    ee.emitEvent("time_slider_change")
+};
+
 
 Controller.prototype._area_change = function(id){
 
@@ -84,6 +95,39 @@ Controller.prototype.median = function(values){
         return values[half];
     else
         return (values[half-1] + values[half]) / 2.0;
+};
+
+Controller.prototype._wrap = function(text, width, string){
+    text.each(function () {
+        var text = d3.select(this),
+            words = string.split(/\s+/).reverse(),
+            word,
+            line = [],
+            lineNumber = 0,
+            lineHeight = 1.1, // ems
+            x = text.attr("x"),
+            y = text.attr("y"),
+            dy = 0, //parseFloat(text.attr("dy")),
+            tspan = text.text(null)
+                .append("tspan")
+                .attr("x", x)
+                .attr("y", y)
+                .attr("dy", dy + "em");
+        while (word = words.pop()) {
+            line.push(word);
+            tspan.text(line.join(" "));
+            if (tspan.node().getComputedTextLength() > width) {
+                line.pop();
+                tspan.text(line.join(" "));
+                line = [word];
+                tspan = text.append("tspan")
+                    .attr("x", x)
+                    .attr("y", y)
+                    .attr("dy", ++lineNumber * lineHeight + dy + "em")
+                    .text(word);
+            }
+        }
+    });
 }
 
 

@@ -1,6 +1,7 @@
 function BarGraph(config) {
 
     this.config = config;
+    this.cs = controller.config.colorScheme;
     //this.indicator = state_obj.indicator;
 
     this._init();
@@ -19,7 +20,7 @@ BarGraph.prototype._init = function(){
     this.data_period.sort(this._sort_y("alpha"));
     this._build_graph();
     this._set_scales();
-    this._draw_axes();
+    //this._draw_axes();
     this._draw_bars();
     this._draw_header();
 
@@ -56,12 +57,12 @@ BarGraph.prototype._build_graph = function(){
 
     var config = this.config;
 
-    var full_width = 500;
-    var full_height = 250;
+    var full_width = 300;
+    var full_height = 300;
 
     config.middle = full_width / 2;
 
-    config.margin.middle = config.margin.left / 4;
+    config.margin.middle = 2;
 
     this.width =  config.middle - config.margin.left  - config.margin.middle;
     this.height = full_height - config.margin.bottom - config.margin.top;
@@ -136,12 +137,15 @@ BarGraph.prototype._draw_bars = function(){
     var self = this;
     var config = self.config;
     var data = self.data_period;
+    var state = controller.state;
+
+
 
     this._background_bars_right = this._chart_right.selectAll(".background_bar")
         .data(data);
 
     this._background_bars_right.enter().append("rect")
-        .attr("class", "background bar")
+        .attr("class", "background bar clickable")
         .attr("x", 3)
         .attr("y", function (d, i) {return self.y(d[config.name_field])})
         .attr("width", self.width)
@@ -155,13 +159,13 @@ BarGraph.prototype._draw_bars = function(){
         .data(data);
 
     this._bars.enter().append("rect")
-        .attr("class", "foreground bar")
+        .attr("class", "foreground bar clickable")
         .attr("x", 3)
         .attr("y", function (d, i) {return self.y(d[config.name_field])})
         .attr("width", function (d, i) {return self.x(self.validate_NaN_to_0(d[config.value_field]))})
         .attr("height", function (d, i) {return self.y.rangeBand()})
         .style("stroke-width", "0")
-        .style("fill", function(d){ return self._select_color(d)}) //config file???
+        .style("fill", function(d){ return self._select_color(d)})
         .on("click", self._bar_click.bind(this));
 
 
@@ -169,13 +173,13 @@ BarGraph.prototype._draw_bars = function(){
         .data(data);
 
     this._background_bars_left.enter().append("rect")
-        .attr("class", "background_bar" )
+        .attr("class", "background_bar clickable" )
         .attr("x", 3)
         .attr("y", function (d, i) {return self.y(d[config.name_field])})
         .attr("width", self.width)
         .attr("height", function (d, i) {return self.y.rangeBand()})
         .style("stroke-width", "0")
-        .style("fill", "white")
+        .style("fill", function(d){ return self._select_color(d)})
         .on("click", self._bar_click.bind(this));
 
 
@@ -184,15 +188,34 @@ BarGraph.prototype._draw_bars = function(){
 
 
     this._label.enter().append("text")
-        .attr("class", "name text color3")
+        .attr("class", "name text clickable")
         .attr("x", "0.5em")
         .attr("y", function (d, i) {return (self.y(d[config.name_field]) + self.y(d[config.name_field]) + self.y.rangeBand()) / 2})
         .attr("dy", "0.4em")
         .text(function(d, i){return self._get_name(d[config.id_field])})
         .style("font-size", "0.8em")
         .style("font-weight", "bold")
-        .style("fill", " #2d2926"); //config file???
+        .style("fill", self.cs.dark_text_color)
+        //.style("fill", "white")
+        .on("click", self._bar_click.bind(this));
 
+    var format = d3.format("1g")
+
+    this._label_value = this._chart_left.selectAll(".value text")
+        .data(data);
+
+    this._label_value.enter().append("text")
+        .attr("class", "name text clickable")
+        .attr("x", self.width)
+        .attr("y", function (d, i) {return (self.y(d[config.name_field]) + self.y(d[config.name_field]) + self.y.rangeBand()) / 2})
+        .attr("dy", "0.4em")
+        .text(function(d, i){return d[config.value_field].toFixed(0)})
+        .style("text-anchor", "end")
+        .style("font-size", "0.8em")
+        .style("font-weight", "bold")
+        .style("fill", self.cs.dark_text_color)
+        //.style("fill", "white")
+        .on("click", self._bar_click.bind(this));
 
 
 };
@@ -210,7 +233,7 @@ BarGraph.prototype._draw_header = function(){
         .attr("text-anchor", "left")
         .style("font-size", "1.5em")
         .style("fill", "white")
-        .text( "Comparing " + controller.config.areaTypeMapping[state.areaType] + " in " + state.current_period)
+        .text( controller.config.areaTypeMapping[state.areaType] + ": " + controller.config.indicatorLabels[state.indicator]);
 
 
 };
@@ -240,6 +263,12 @@ BarGraph.prototype._area_change_listener = function() {
         .duration(1000)
         .style("fill", function(d){ return self._select_color(d)});
 
+    self._background_bars_left
+        .data(self.data_period)
+        .transition()
+        .duration(1000)
+        .style("fill", function(d){ return self._select_color(d)});
+
 
 
 };
@@ -260,15 +289,20 @@ BarGraph.prototype._period_change_listener = function() {
         .data(self.data_period)
         .transition()
         .duration(750)
-        .attr("width", function (d, i) {return self.x(self.validate_NaN_to_0(d[config.value_field]))})
-        //.attr(config.bar_attr)
-        //.style(config.bar_style);
+        .attr("width", function (d, i) {return self.x(self.validate_NaN_to_0(d[config.value_field]))});
 
-    self._chart_right
+    self._label_value
+        .data(self.data_period)
         .transition()
-        .select(".x.axis")
         .duration(750)
-        .call(this.xAxis_right);
+        .text(function(d, i){return d[config.value_field].toFixed(0)})
+
+
+    //self._chart_right
+    //    .transition()
+    //    .select(".x.axis")
+    //    .duration(750)
+    //    .call(this.xAxis_right);
 
 
 
@@ -288,7 +322,7 @@ BarGraph.prototype._get_name = function(id){
 
     return controller.config.areaList[state.areaType].filter(function(d){
         if(d.id == id){return d}
-    })[0].name;
+    })[0].short_name;
 
 };
 
@@ -297,11 +331,12 @@ BarGraph.prototype._select_color = function(d){
 
     var config = this.config;
     var state = controller.state;
+    var self = this;
 
     if(d[config.id_field] == state.current_area){ //config file;
-        return "#9b26b6"
+        return self.cs.highlight_color
     } else {
-        return "#ffe166"
+        return self.cs.main_color_offset
     }
 
 };

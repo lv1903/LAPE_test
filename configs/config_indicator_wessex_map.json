@@ -1,0 +1,19 @@
+{
+
+  "container_id": "#wessexMapItem",
+  "margin": {"top": 40, "right": 30, "bottom": 60, "left": 30},
+  "font-size": 14,
+
+
+
+  "id_field": "Area Code",
+  "name_field": "Area Name",
+  "value_field": "Value",
+  "count_field": "Count"
+
+
+
+
+
+
+}

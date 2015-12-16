@@ -1,6 +1,7 @@
 function LineGraph(config) {
 
     this.config = config;
+    this.cs = controller.config.colorScheme;
     this._init();
 
 }
@@ -20,8 +21,8 @@ LineGraph.prototype._init = function(){
     this._draw_axes();
     this._draw_lines();
     this._draw_points();
-    this._draw_density_line();
     this._draw_header();
+    this._draw_time_vertical();
 
     this._bindEvents();
 
@@ -35,32 +36,12 @@ LineGraph.prototype._build_graph = function(){
 
     var config = this.config;
 
-    var full_width = 500;
-    var full_height = 250;
+    var full_width = 300;
+    var full_height = 300;
 
 
-    //var full_width = parseInt(d3.select(config.container_id).style("width"), 10);
-    //var full_height = parseInt(d3.select(config.container_id).style("height"), 10);
-    //var full_height = full_width/2;
-
-    //config.margin.left = Math.max(100, full_width /4);  //here
-    //config.margin.left = 300
-
-    config.middle = full_width / 2;
-
-    config.margin.middle = config.margin.left / 4;
-
-    this.width =  config.middle - config.margin.left  - config.margin.middle;
+    this.width =  full_width - config.margin.left  - config.margin.right;
     this.height = full_height - config.margin.bottom - config.margin.top;
-
-    //console.log(this.width + " x " + this.height)
-
-
-    //this._svg = d3.select(config.container_id)
-    //    .append("svg")
-    //    .attr("class", "widget")
-    //    .attr("width", full_width)
-    //    .attr("height", full_height);
 
     this._svg = d3.select(config.container_id)
         .append("div")
@@ -71,14 +52,9 @@ LineGraph.prototype._build_graph = function(){
         .attr("viewBox", "0 0 " + full_width + " " + full_height )
         .classed("svg-content-responsive", true)
 
-    this._chart_left = this._svg
+    this._chart = this._svg
         .append('g')
         .attr("transform", "translate(" + config.margin.left + "," + config.margin.top + ")");
-
-
-    this._chart_right = this._svg
-        .append('g')
-        .attr("transform", "translate(" + (config.middle + config.margin.middle) + "," + config.margin.top + ")");
 
 
 };
@@ -89,31 +65,30 @@ LineGraph.prototype._build_graph = function(){
  var self = this;
  var config = this.config;
 
- //config.margin.left = 50;
+ var max_y_value = d3.max(self.data, function(d) { return d[config.y_field]});
+ var max_y_value_width = String(max_y_value.toFixed(0)).length * 10
+
+
+console.log("*******")
+ console.log(max_y_value)
+ console.log(max_y_value_width)
 
  //calcualate constant origin shift
  this._period_arr = this._list(self.data, config.x_field);
- var origin_shift_xLine = 10;
+ var origin_shift_x = max_y_value_width;
 
- var tick_width_xLine = self.width / (this._period_arr.length - 1);
+ var tick_width_x = self.width / (this._period_arr.length - 1);
 
- //var tick_width_xDensity =  d3.max(self.density_data, function(d) { return +d["density"]})/ config.margin.middle ;
- //var origin_shift_xDensity = 50;
+ this.x = d3.scale.linear()
+     .range([0, this.width])
+     .domain([-(origin_shift_x/tick_width_x), this._period_arr.length - 1]);
+     //.domain([-max_y_value_width, this._period_arr.length - 1])
 
-
-
- this.xLine = d3.scale.linear()
-     .range([config.margin.middle, this.width])
-     .domain([-(origin_shift_xLine/tick_width_xLine), this._period_arr.length - 1]);
-
- this.xDensity = d3.scale.linear()
-     .range([this.width - config.margin.middle * 4, 0.1 * this.width])
-     .domain([0, d3.max(self.density_data, function(d) { return +d["density"]})]) //??"density" should be in config file
 
 
  this.y = d3.scale.linear()
      .range([0, this.height])
-     .domain([ d3.max(self.density_data, function(d) { return +d["x"]}), 0]);//??"x" should be in config file (density graph sideways so y is called x)
+     .domain([ d3.max(self.data, function(d) { return d[config.y_field]}) * 1.25, 0]);//??"x" should be in config file (density graph sideways so y is called x)
 
  };
 
@@ -125,7 +100,7 @@ LineGraph.prototype._build_graph = function(){
      var self = this;
 
      this.xAxisLine = d3.svg.axis()
-         .scale(this.xLine)
+         .scale(this.x)
          .orient("bottom")
          .outerTickSize(0)
          .tickFormat(function(d, i){
@@ -134,7 +109,7 @@ LineGraph.prototype._build_graph = function(){
              } else {
                  return ""
              }})
-         .ticks(Math.max(5, Math.ceil(self._period_arr.length/2))); //set min 5 ticks otherwise every other???
+         .ticks(Math.max(5, Math.ceil(self._period_arr.length/2))); //set max 5 ticks otherwise every other???
 
 
 
@@ -142,21 +117,28 @@ LineGraph.prototype._build_graph = function(){
      this.yAxis = d3.svg.axis()
          .scale(this.y)
          .orient("left")
-         .outerTickSize(0);
+         .tickFormat(d3.format("1g"))
+         .outerTickSize(0)
+         .ticks(5);
 
 
-     this._chart_right.append("g")
+
+     this._chart.append("g")
          .attr("class", "x axis")
          .attr("transform", "translate(0," + this.height + ")")
          .call(this.xAxisLine);
 
 
-     this._chart_right.append("g")
+
+     var max_y_value = d3.max(self.data, function(d) { return d[config.y_field]});
+     var max_y_value_width = String(max_y_value.toFixed(0)).length * 10
+
+     this._chart.append("g")
          .attr("class", "y axis")
-         .attr("transform", "translate(" + config.margin.middle +  ", 0)")
+         .attr("transform", "translate("  + max_y_value_width / 2 + ", 0)")
          .call(this.yAxis);
 
-     this._chart_right.append("text")
+     this._chart.append("text")
          .attr("class", "x-label")
          .attr("text-anchor", "end")
          .attr("x", this.width - 20)
@@ -176,16 +158,17 @@ LineGraph.prototype._draw_lines = function(){
     // Define the line
     var fLine = d3.svg.line()
         .defined(function(d) {return !isNaN(d[config.y_field]); })
-        .x(function(d, i) {return self.xLine(i);})
+        .x(function(d, i) {return self.x(i);})
         .y(function(d) {return self.y(d[config.y_field]);});
+        //.interpolate("monotone");
 
 
     this.dataNest.forEach(function(d, i){
 
         var id = d.key
 
-        var lines = self._chart_right.append("path")
-            .attr("class", "line timeLine")
+        var lines = self._chart.append("path")
+            .attr("class", "line timeLine clickable")
             .attr("id", "line" + d.key) // assign ID
             .attr("d", fLine(d.values))
             .style("stroke", function(){return self._select_color(d.key)})
@@ -205,15 +188,15 @@ LineGraph.prototype._draw_points = function(){
 
     this.dataNest.forEach(function(d, i){
 
-        var dots = self._chart_right.selectAll(".timeDot")
+        var dots = self._chart.selectAll(".timeDot")
             .data(d.values)
             .enter()
             .append("circle")
-            .attr("class", "dots" + d.key)
+            .attr("class", "dots" + d.key + " clickable")
             .attr("id", "timeDots" + d.key)
-            .attr("cx", function(e, i){return self.xLine(i)})
+            .attr("cx", function(e, i){return self.x(i)})
             .attr("cy", function(e){return self.y(e[config.y_field])})
-            .style("stroke", "#003da5") //??from config
+            .style("stroke", self.cs.background_color)
             .attr("r", function(){return self._select_dot_radius(d.key)})
             .style("stroke-width", function(){return self._select_dot_stroke_width(d.key)})
             .style("fill", function(){return self._select_color(d.key)})
@@ -225,68 +208,11 @@ LineGraph.prototype._draw_points = function(){
 
 };
 
-LineGraph.prototype._draw_density_line = function(){
 
-    var self = this;
-    var config = this.config;
-    var data = this.data;
-    //var densityDataNest = this.densityDataNest;
-
-    var state = controller.state;
-
-    //var year = controller._current_period;
-    var densityArray;
-    this.densityDataNest.forEach(function(d, i){
-        if(d.key == state.current_period){
-            densityArray = d.values;
-        }
-     });
-
-    this.fArea = d3.svg.area()
-        .y(function(d) { return self.y(d.x); })
-        .x0(function(d) { return self.xDensity(0) })
-        .x1(function(d) { return self.xDensity(d.density); })
-        .interpolate("linear");
-
-    //var fLine = d3.svg.line()
-    //    .y(function(d) { return self.y(d.x); })
-    //    .x(function(d) { return self.xDensity(d.density); })
-    //    .interpolate("linear");
-
-    this._dist_area = this._chart_left
-        .datum(densityArray)
-        .append("path")
-        .attr("class", "densityArea")
-        .attr("d", this.fArea)
-        //.style("fill", "#BFD8BD");
-
-    //var dist_path = this._chart_left
-    //    .append("path")
-    //    .datum(densityArray)
-    //    .attr("class", "desnsityLine")
-    //    .attr("d", fLine)
-    //    //.style("stroke", "#BFD8BD")
-    //    //.style("stroke-width", 1)
-    //    .style("fill", "none")
-    //    //.style("fill", "lightsteelblue")
-
-
-
-
-};
 
 LineGraph.prototype._draw_header = function(){
 
-    this._header  = this._chart_left.append("text")
-        .attr("x", "0em")
-        .attr("y", "-2.5em" )
-        .attr("dy", "2em")
-        .attr("text-anchor", "left")
-        .style("font-size", "1.5em")
-        .style("fill", "white")
-        .text("Distribution in England");
-
-    this._header  = this._chart_right.append("text")
+    this._header  = this._chart.append("text")
         .attr("x", "0em")
         .attr("y", "-2.5em" )
         .attr("dy", "2em")
@@ -294,6 +220,28 @@ LineGraph.prototype._draw_header = function(){
         .style("font-size", "1.5em")
         .style("fill", "white")
         .text("Change over time");
+
+};
+
+LineGraph.prototype._draw_time_vertical = function(){
+    var self = this;
+    var config = this.config;
+    var state = controller.state;
+
+    console.log(self._period_arr.indexOf(state.current_period))
+
+    self._vertical_line = self._chart.append("line")
+        .attr("class", "line verticalTimeLine")
+        .attr("x1", self.x(self._period_arr.indexOf(state.current_period)))
+        .attr("x2", self.x(self._period_arr.indexOf(state.current_period)))
+        .attr("y1", self.height)
+        .attr("y2", self.height * 0.1)
+        .style("stroke-width", 2)
+        .style("stroke", "white")
+        .style("fill", "none");
+
+    self._vertical_line.moveToBack();
+
 
 };
 
@@ -321,7 +269,7 @@ LineGraph.prototype._area_change_listener = function() {
 
 
     this.dataNest.forEach(function(d, i){
-        var lines = self._chart_right.select("#line" + d.key)
+        var lines = self._chart.select("#line" + d.key)
             .transition()
             .duration(750)
             .style("stroke", function(){return self._select_color(d.key)})
@@ -330,7 +278,7 @@ LineGraph.prototype._area_change_listener = function() {
     });
 
     this.dataNest.forEach(function(d, i){
-        var dots = self._chart_right.selectAll(".dots" + d.key)
+        var dots = self._chart.selectAll(".dots" + d.key)
             .transition()
             .duration(750)
             .attr("r", function(){return self._select_dot_radius(d.key)})
@@ -345,19 +293,17 @@ LineGraph.prototype._area_change_listener = function() {
 LineGraph.prototype._period_change_listener = function() {
 
     var state = controller.state;
+    var self = this;
+    var state = controller.state;
+    var config = this.config;
 
-    var densityArray;
-    this.densityDataNest.forEach(function(d, i){
-        if(d.key == state.current_period){
-            densityArray = d.values;
-        }
-    });
-
-    this._dist_area
-        .datum(densityArray)
+    self._vertical_line
         .transition()
-        .duration(750)
-        .attr("d", this.fArea);
+        .duration(500)
+        .ease("exp")
+        .attr("x1", self.x(self._period_arr.indexOf(state.current_period)))
+        .attr("x2", self.x(self._period_arr.indexOf(state.current_period)))
+
 
 };
 
@@ -390,11 +336,12 @@ LineGraph.prototype._nestData = function(data, nestField){
 
 
 LineGraph.prototype._select_color = function(id){
+    var self = this;
     var state = controller.state;
     if(id == state.current_area){ //colors in config file;
-        return "#9b26b6"
+        return self.cs.highlight_color
     } else {
-        return "#ffe166"
+        return self.cs.main_color_offset
     }
 };
 
@@ -426,27 +373,10 @@ LineGraph.prototype._select_dot_radius = function(id){
 };
 
 
-d3.selection.prototype.moveToBack = function() {
-    return this.each(function() {
-        var firstChild = this.parentNode.firstChild;
-        if (firstChild) {
-            this.parentNode.insertBefore(this, firstChild);
-        }
-    });
-};
 
-d3.selection.prototype.moveToFront = function() {
-    return this.each(function(){
-        this.parentNode.appendChild(this);
-    });
-};
 
 
 LineGraph.prototype._line_click = function(self, id){
-
-    //var self = this;
-
-    console.log(id)
 
     var config = self.config;
     controller._area_change(id);
@@ -454,12 +384,8 @@ LineGraph.prototype._line_click = function(self, id){
 };
 
 LineGraph.prototype._dot_click = function(d){
-
-    //var self = this;
-
-    console.log(d)
-
     var config = this.config;
+    controller._time_slider_change(d[config.x_field]);
     controller._area_change(d[config.id_field]);
 
 };

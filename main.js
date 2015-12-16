@@ -44,14 +44,7 @@ function getTopoJsons(){
 
     var geoJsonCollections = {};
 
-    //for(var areaType in obj){
-    //    //get list of entities
-    //    var request_array = [];
-    //    for(var i in obj[areaType]){
-    //        request_array.push(obj[areaType][i][id]);
-    //    }
-    //    console.log(request_array)
-    //}
+
 
     var request_array =  [
                             "E38000120",
@@ -100,7 +93,7 @@ function getTopoJsons(){
 
         geoJsonCollections.CCG = collection
 
-        var qVal = 1e3;
+        var qVal = 1e1;
         var sVal = 1e-3;
 
         var id = "CCG15CD";//needs to go in config file
@@ -115,7 +108,7 @@ function getTopoJsons(){
 
         topojson_obj = {"CCG": topology}
 
-        //console.log("got topojson")
+        console.log("got topojson")
 
     });
 
@@ -154,6 +147,9 @@ function getDensityObj(allObj, split_field, value_field){
     for(var i in allObj){
         if(allObj[i][value_field] > max_x){ max_x = allObj[i][value_field]}
     }
+
+    //add 5% to max value to make graph cleaner
+    max_x = 1.1 * max_x;
 
     //console.log(max_x)
 
@@ -256,14 +252,15 @@ var config_obj = {};
 
 config_obj.LAPE_Config = require("./configs/LAPE_Config.json");
 
-console.log("here")
-
 config_obj.config_timeSlider = require("./configs/config_timeSlider.json");
+
+config_obj.config_indicator_densitygraph = require("./configs/config_indicator_density_graph.json");
+config_obj.config_indicator_wessexmap = require("./configs/config_indicator_wessex_map.json");
+config_obj.config_indicator_areafacts = require("./configs/config_indicator_area_facts.json");
 
 config_obj.congig_indicator_text = require("./configs/config_indicator_text.json");
 config_obj.config_indicator_bargraph = require("./configs/config_indicator_bar_graph.json");
 config_obj.config_indicator_linegraph = require("./configs/config_indicator_line_graph.json");
-config_obj.config_indicator_mapD3 = require("./configs/config_indicator_map_d3.json");
 
 
 
@@ -279,24 +276,36 @@ app.get('/', function(req, res){
 
 app.get("/IndicatorReport/:indicator/:areaType/:genderType", function(req, res){
 
-   //console.log("here")
+    console.log("1")
 
     var state_obj = {};
 
+    console.log("2")
+
     state_obj.indicator = req.params["indicator"];
+
+    console.log("3")
 
     //console.log(indicator)
 
     state_obj.areaType = req.params["areaType"];
     state_obj.genderType = req.params["genderType"];
 
+    console.log("4")
+
     var subsetList = getSubsetList(state_obj.areaType);
     //console.log(subsetList)
 
+    console.log("5")
+
     var indicatorMapped = getIndicatorMapped(state_obj.indicator);
+
+    console.log("6")
 
     var apiPath = '/v1/datasets/41WGoeXhQg/data?opts={"limit":10000}&filter={"Indicator":"' + indicatorMapped + '","Area%20Type":"' + state_obj.areaType + '","Sex":"' + state_obj.genderType + '"}';
     //console.log(apiPath)
+
+    console.log("7")
 
     var options = {
         host: 'q.nqminds.com',

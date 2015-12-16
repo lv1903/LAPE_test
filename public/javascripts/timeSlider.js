@@ -3,6 +3,7 @@
 TimeSlider = function(config){
 
     this.config = config;
+    this.cs = controller.config.colorScheme;
     this._init();
 
 
@@ -19,6 +20,8 @@ TimeSlider.prototype._init = function(){
     this._define_brush();
     this._draw_slider();
 
+    this._bindEvents();
+
 
 
 };
@@ -29,8 +32,8 @@ TimeSlider.prototype._build_graph = function(){
     var config = this.config;
     var state = controller.state;
 
-    var full_width = 500;
-    var full_height = 125;
+    var full_width = 300;
+    var full_height = 300;
 
     this.width =  full_width - config.margin.left  - config.margin.right;
     this.height = full_height - config.margin.bottom - config.margin.top;
@@ -57,10 +60,10 @@ TimeSlider.prototype._set_scales = function() {
     var self = this;
 
     this.x = d3.scale.linear()
-        .domain([2009, 2013]) //should calculate domain???
+        .domain([2009 - 0.25, 2014 + 0.25 ]) //should calculate domain???
         .range([0, self.width])
-        .clamp(true)
-        .nice(10);
+        .clamp(true);
+        //.nice(10);
 
 };
 
@@ -75,17 +78,19 @@ TimeSlider.prototype._draw_axes = function(){
         .tickFormat(function(d) {return d;})
         .tickSize(0)
         .tickPadding(12)
-        .tickValues([self.x.domain()[0], self.x.domain()[1]]);
+        .tickValues([Math.round(self.x.domain()[0]), Math.round(self.x.domain()[1])]);
 
     this._chart.append("g")
         .attr("class", "slider x axis")
-        .attr("transform", "translate(0," + self.height / 2 + ")")
+        .attr("transform", "translate(0," + self.height / 5 + ")")
+        .style("fill", self.cs.main_color) //not working still in css!!!
         .call(self.xAxis)
         .select(".domain")
         .select(function() {
             return this.parentNode.appendChild(this.cloneNode(true));
         })
         .attr("class", "halo")
+        .style("fill", self.cs.main_color); //not working still in css!!!
 
 };
 
@@ -110,26 +115,20 @@ TimeSlider.prototype._define_brush = function(){
 
             }
 
-            self.handle.attr("transform", "translate(" + self.x(Math.round(value)) + ",0)");
-
-            //console.log(state.current_period + " " + value + " " + Math.round(value))
-
-
-            //d3.select(".handle")
-            //self.handle
-            //    .transition()
-            //    .duration(200)
-            //    .ease("quadin")
-            //    .attr("transform", "translate(" + self.x(value) + ",0)")
-            //    .transition()
-            //    .duration(500)
-            //    .ease("quadout")
-            //    .attr("transform", "translate(" + self.x(Math.round(value)) + ",0)");
+            self.handle
+                .transition()
+                .duration(500)
+                .ease("exp")
+                .attr("transform", "translate(" + self.x(Math.round(value)) + ",0)");
 
             self.handle.select('text').text(Math.round(value));
+
             controller._period_change(Math.round(value));
 
-        });
+
+        })
+
+
 
 };
 
@@ -138,41 +137,66 @@ TimeSlider.prototype._draw_slider = function(){
     var self = this;
     var state = controller.state;
 
-    var slider = this._chart.append("g")
+    this.slider = this._chart.append("g")
         .attr("class", "slider")
         .call(self.brush);
 
-    slider.selectAll(".extent,.resize")
+    this.slider.selectAll(".extent,.resize")
         .remove();
 
-    slider.select(".background")
+    this.slider.select(".background")
         .attr("height", self.height);
 
-    this.handle = slider.append("g")
-        .attr("class", "handle")
+    this.handle = this.slider.append("g")
+        .attr("class", "handle clickable")
         //.on("mouseout", self._snap_handle);
 
     this.handle.append("path")
-        .attr("transform", "translate(0," + self.height / 2 + ")")
+        .attr("transform", "translate(0," + self.height / 5 + ")")
         .attr("d", "M 0 -10 V 10")
         //.on("mouseout", self._snap_handle);
 
     this.handle.append('text')
         .text(self.x(state.current_period))
-        .attr("transform", "translate(" + (-18) + " ," + (self.height / 2 - 15) + ")")
+        .attr("transform", "translate(" + (-18) + " ," + (self.height / 5 - 15) + ")")
         //.on("mouseout", self._snap_handle);
 
-    slider
+    this.slider
         .call(self.brush.event)
 
 
 };
+//
+//TimeSlider.prototype._snap_handle = function(){
+//
+//    console.log("Snap handle")
+//
+//};
 
-TimeSlider.prototype._snap_handle = function(){
+TimeSlider.prototype._bindEvents = function(){
 
-    console.log("Snap handle")
+    ee.addListener('time_slider_change', this._period_change_listener.bind(this));
 
-}
+};
+
+TimeSlider.prototype._period_change_listener = function(){
+
+    var self = this;
+
+    var value = controller.state.current_period;
+
+    self.handle
+        .transition()
+        .duration(500)
+        .ease("exp")
+        .attr("transform", "translate(" + self.x(Math.round(value)) + ",0)");
+
+    self.handle.select('text').text(Math.round(value));
+
+    controller._period_change(Math.round(value));
+
+
+};
 
 
 
