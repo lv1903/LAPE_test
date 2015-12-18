@@ -239,6 +239,16 @@ DensityGraph.prototype._draw_header = function(){
         .style("fill", "white")
         .text("Distribution in England");
 
+    this._no_data  = this._chart.append("text")
+        .attr("class", "noDataText")
+        .attr("x", "0em")
+        .attr("y", 30 )
+        .attr("dy", "0em")
+        .attr("text-anchor", "left")
+        .style("font-size", "1.5em")
+        .style("fill", "white")
+        .text("");
+
 };
 
 
@@ -257,31 +267,6 @@ DensityGraph.prototype._bindEvents = function(){
 
 DensityGraph.prototype._area_change_listener = function() {
 
-    //var self = this;
-    //var state = controller.state;
-    //
-    //d3.select("#line" + state.current_area).moveToFront();
-    //d3.selectAll(".dots" + state.current_area).moveToFront();
-    //
-    //
-    //this.dataNest.forEach(function(d, i){
-    //    var lines = self._chart.select("#line" + d.key)
-    //        .transition()
-    //        .duration(750)
-    //        .style("stroke", function(){return self._select_color(d.key)})
-    //        .style("stroke-width", function(){return self._select_line_stroke_width(d.key)})
-    //
-    //});
-    //
-    //this.dataNest.forEach(function(d, i){
-    //    var dots = self._chart_right.selectAll(".dots" + d.key)
-    //        .transition()
-    //        .duration(750)
-    //        .attr("r", function(){return self._select_dot_radius(d.key)})
-    //        .style("stroke-width", function(){return self._select_dot_stroke_width(d.key)})
-    //        .style("fill", function(){return self._select_color(d.key)});
-    //});
-
 
 };
 
@@ -291,68 +276,130 @@ DensityGraph.prototype._period_change_listener = function() {
     var state = controller.state;
     var self = this;
 
-    var densityArray;
-    this.densityDataNest.forEach(function(d, i){
-        if(d.key == state.current_period){
-            densityArray = d.values;
-        }
-    });
 
-    this._dist_area
-        .datum(densityArray)
-        .transition()
-        .duration(750)
-        .attr("d", this.fArea);
-
-    var text_anchor = "end"
-    for(i in self.averages){
-
-        var name = self.averages[i].name;
-        var median = self.averages[i][controller.state.current_period];
-
-        d3.select(".average_line_" + name)
+    //check if data is available and add no data text
+    if(controller.data_period.length == 0){
+        self._no_data
             .transition()
-            .duration(1000)
-            .attr("x1", self.x(median))
-            .attr("x2", self.x(median))
+            .duration(10)
+            .text("Sorry No Data Available")
 
-
-
-        d3.select(".average_text_" + name)
+    } else {
+        self._no_data
             .transition()
-            .duration(1000)
-            .attr("x", function(){
-                if(text_anchor == "end"){
-                    return self.x(median) - 5
-                } else {
-                    return self.x(median) + 5
-                }
-            });
-
-
-
-        d3.select(".average_value_" + name)
-            .transition()
-            .duration(1000)
-            .attr("x", function(){
-                if(text_anchor == "end"){
-                    return self.x(median) - 10
-                } else {
-                    return self.x(median) + 10
-                }
-            })
-            .text(Math.round(median));
-
-        //alternate text direction
-        if(text_anchor == "end"){
-            text_anchor = "start";
-        } else {
-            text_anchor = "end";
-        };
-
+            .duration(10)
+            .text("")
     }
 
 
+    //check if data is available and add change graph
+    if(controller.data_period.length == 0) {
+
+        var fNoData = d3.svg.area()
+            .x(function(d) { return self.width /2 })
+            .y0(function(d) { return self.height })
+            .y1(function(d) { return self.height })
+
+
+        this._dist_area
+            .transition()
+            .duration(750)
+            .attr("d", fNoData);
+
+
+        for (i in self.averages) {
+
+            var name = self.averages[i].name;
+
+            d3.select(".average_line_" + name)
+                .transition()
+                .duration(500)
+                .attr("y1", self.height)
+                .attr("y2", self.height)
+
+            d3.select(".average_text_" + name)
+                .transition()
+                .duration(1000)
+                .text("")
+
+
+            d3.select(".average_value_" + name)
+                .transition()
+                .duration(1000)
+                .text("");
+
+        }
+
+    } else {
+        var densityArray;
+        this.densityDataNest.forEach(function (d, i) {
+            if (d.key == state.current_period) {
+                densityArray = d.values;
+            }
+        });
+
+        this._dist_area
+            .datum(densityArray)
+            .transition()
+            .duration(750)
+            .attr("d", this.fArea);
+
+
+        var y = this.height/2;
+        var text_anchor = "end"
+        for (i in self.averages) {
+
+            y -= 30;
+
+            var name = self.averages[i].name;
+            var median = self.averages[i][controller.state.current_period];
+
+            d3.select(".average_line_" + name)
+                .transition()
+                .duration(1000)
+                .attr("y1", self.height)
+                .attr("y2", y)
+                .attr("x1", self.x(median))
+                .attr("x2", self.x(median))
+
+
+            d3.select(".average_text_" + name)
+                .transition()
+                .duration(1000)
+                .text(name)
+                .attr("x", function () {
+                    if (text_anchor == "end") {
+                        return self.x(median) - 5
+                    } else {
+                        return self.x(median) + 5
+                    }
+                });
+
+
+            d3.select(".average_value_" + name)
+                .transition()
+                .duration(1000)
+
+                .attr("x", function () {
+                    if (text_anchor == "end") {
+                        return self.x(median) - 10
+                    } else {
+                        return self.x(median) + 10
+                    }
+                })
+                .text(Math.round(median));
+
+            //alternate text direction
+            if (text_anchor == "end") {
+                text_anchor = "start";
+            } else {
+                text_anchor = "end";
+            }
+            ;
+
+        }
+
+    }
 
 
 
@@ -424,34 +471,3 @@ DensityGraph.prototype._select_dot_radius = function(id){
 };
 
 
-//d3.selection.prototype.moveToBack = function() {
-//    return this.each(function() {
-//        var firstChild = this.parentNode.firstChild;
-//        if (firstChild) {
-//            this.parentNode.insertBefore(this, firstChild);
-//        }
-//    });
-//};
-//
-//d3.selection.prototype.moveToFront = function() {
-//    return this.each(function(){
-//        this.parentNode.appendChild(this);
-//    });
-//};
-
-
-//DensityGraph.prototype._line_click = function(self, id){
-//
-//    var config = self.config;
-//    controller._area_change(id);
-//
-//};
-
-//DensityGraph.prototype._dot_click = function(d){
-//
-//    var config = this.config;
-//
-//    controller._area_change(d[config.id_field]);
-//
-//
-//};

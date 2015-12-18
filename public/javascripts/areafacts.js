@@ -8,8 +8,8 @@ function AreaFacts(config) {
 AreaFacts.prototype._init = function(){
 
     this._build_graph();
-    this._write_facts();
     this._build_gauge();
+    this._write_facts();
 
 
 
@@ -53,8 +53,8 @@ AreaFacts.prototype._build_gauge = function(){
     var state = controller.state;
 
     this._gauge_low_label = self._chart.append("text")
-        .attr("x", 0)
-        .attr("y", 120)//, bbox.y + bbox.height) //make dynamic
+        .attr("x", -10)
+        .attr("y", 110)//, bbox.y + bbox.height) //make dynamic
         //.attr("dy", "0em")
         .attr("text-anchor", "left")
         .style("font-size", "1em")
@@ -63,19 +63,18 @@ AreaFacts.prototype._build_gauge = function(){
 
 
     this._gauge_high_label = self._chart.append("text")
-        .attr("x", self.width - 42)
-        .attr("y", 120)//, bbox.y + bbox.height) //make dynamic
+        .attr("x", self.width - 35)
+        .attr("y", 110)//, bbox.y + bbox.height) //make dynamic
         //.attr("dy", "0em")
         .attr("text-anchor", "right")
         .style("font-size", "1em")
         .style("fill", "white")
         .call(controller._wrap, 30, "England High");
 
-    var val = this.getValueFromPeriodData(state.current_area);
-
-
     //add gauge------------------------------------------------
     var sideLength = 180;
+
+
     this._gauge = this._gauge(self._chart, {
         size: sideLength,
         clipWidth: sideLength,
@@ -89,10 +88,22 @@ AreaFacts.prototype._build_gauge = function(){
         yTranslate: 70
 
     });
+
+
     this._gauge.render();
+
+
+    //check if data is available for period otherwise send 0 and exit
+    if(controller.data_period.length == 0){
+        console.log("hee")
+        this._gauge.update(0)
+        return
+    }
+
+
+
+    var val = this.getValueFromPeriodData(state.current_area);
     this._gauge.update(val.percent)
-
-
 }
 
 
@@ -118,6 +129,7 @@ AreaFacts.prototype._write_facts = function(){
     x = 0;
 
     this._header  = this._chart.append("text")
+        .attr("class", "headerText")
         .attr("id", "areaFactsHeader")
         .attr("x", x)
         .attr("y",  y)
@@ -126,6 +138,31 @@ AreaFacts.prototype._write_facts = function(){
         .style("font-size", "1.5em")
         .style("fill", self.cs.highlight_color)
         .call(controller._wrap, self.width, state.current_area_name);
+
+
+    //check if data is available if not write No data
+    if(controller.data_period.length == 0){
+
+        bbox = d3.select("#areaFactsHeader").node().getBBox();
+        y = bbox.height + bbox.y + delta_y; //shift y
+        x = 0;
+
+
+        y = bbox.height + bbox.y + delta_y; //shift y
+        x = 0;
+
+        //var arr = [value, unit]
+
+        stringObj = [
+            {str: "Sorry No Data Available", font_size: "1.5em"},
+        ];
+
+        textName = "valueText";
+
+        self._add_string(self, textName, stringObj, x, y);
+
+        return
+    }
 
 
     //add all facts----------------------------------------
@@ -220,19 +257,34 @@ AreaFacts.prototype._area_change_listener = function(){
 
     var self = this;
     var state = controller.state;
-    var val = this.getValueFromPeriodData(state.current_area);
 
     //console.log(val)
 
     //gauge--------------------------------------------------------------------
-    this._gauge.update(val.percent);
+    //check if data is available for period otherwise send 0
+    console.log(controller.data_period.length)
+    if(controller.data_period.length == 0){
+        console.log("hee")
+        this._gauge.update(0)
+        return
+    } else {
+        var val = this.getValueFromPeriodData(state.current_area);
+        this._gauge.update(val.percent);
+    }
     //---------------------------------------------------------------------------
 
     //rewrite facts instead of transition
-    self._header.remove();
-    d3.selectAll(".valueText").remove();
-    d3.selectAll(".countText").remove();
-    d3.selectAll(".rankText").remove()
+
+    var removeList = [
+        ".headerText",
+        ".valueText",
+        ".countText",
+        ".rankText"
+
+    ]
+    for(var i in removeList){
+        if(!d3.selectAll(removeList[i]).empty()){d3.selectAll(removeList[i]).remove()}
+    }
 
     self._write_facts();
 
@@ -246,9 +298,30 @@ AreaFacts.prototype._period_change_listener = function() {
     var state = controller.state;
 
 
-    //gauge
-    var val = this.getValueFromPeriodData(state.current_area);
-    this._gauge.update(val.percent)
+    //gauge--------------------------------------------------------------------
+    //check if data is available for period otherwise send 0
+    if(controller.data_period.length == 0){
+        this._gauge.update(0)
+    } else {
+        var val = this.getValueFromPeriodData(state.current_area);
+        this._gauge.update(val.percent);
+    }
+    //---------------------------------------------------------------------------
+
+    //remove and rewrite facts instead of transition
+
+    var removeList = [
+        ".headerText",
+        ".valueText",
+        ".countText",
+        ".rankText"
+
+    ]
+    for(var i in removeList){
+        if(!d3.selectAll(removeList[i]).empty()){d3.selectAll(removeList[i]).remove()}
+    }
+
+    self._write_facts();
 
 
 

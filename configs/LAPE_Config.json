@@ -110,7 +110,12 @@
       {"id":"E07000091","name":"New Forest","short_name":"New Forest"},
       {"id":"E07000092","name":"Rushmoor","short_name":"Rushmoor"},
       {"id":"E07000093","name":"Test Valley","short_name":"TestValley"},
-      {"id":"E07000094","name":"Winchester","short_name":"Winchester"}
+      {"id":"E07000094","name":"Winchester","short_name":"Winchester"},
+      {"id":"E06000054","name":"Wiltshire","short_name":"Wiltshire"},
+      {"id":"E06000044","name":"Portsmouth","short_name":"Portsmouth"},
+      {"id":"E06000045","name":"Southampton","short_name":"Soton"},
+      {"id":"E06000046","name":"Isle of Wight","short_name":"Isle Wight"}
+
 
     ],
 

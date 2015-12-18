@@ -322,8 +322,9 @@
 
 .flex-header-container {
     /*as item*/
-    margin: auto;
-    width: 95vw;
+    margin: 14px;
+    /*max-width: 95vw;*/
+    max-width: 956px;
     /*min-height: 250px;*/
     background-color: #00778b;
 
@@ -349,14 +350,21 @@
 
 }
 
+@media (max-width: 500px) {
+    .flex-header-container {
+        width: 300px;
+
+    }
+}
+
 
 .flex-header-item {
 
-    margin: 0.5em;
+    margin: 14px;
 
-    font-size: 1.5em;
+    /*font-size: 1.2em;*/
 
-    background-color: white;
+    /*background-color: white;*/
 
     /*min-width: 500px;*/
     /**/
@@ -365,21 +373,34 @@
     /*flex-grow: 1;*/
     /*-webkit-flex-grow: 1;*/
 
+    /*-webkit-flex: 1 0 300px;*/
+    /*flex: 1 0 300px;*/
+
 
 }
 
 .flex-header-item .flex-select {
-    /*height: 2em;*/
+    height: 1.5em;
     /*line-height: 2em;*/
     font-size: 1.5em;
     border: none;
     /*margin: 0.2em;*/
-    background-color: #008399;
-    color: white;
-    margin: 1px;
+    /*background-color: #008399;*/
+    /*color: white;*/
+    color: #2d2926;
+    font-weight: bold;
+    /*margin: 1em;*/
+    /*width: 100%;*/
 
+}
 
-
+.flex-btn {
+    font-size: 1.5em;
+    height: 1.5em;
+    padding: 0 5px 0 5px;
+    color: #2d2926;
+    background-color: #ffcd00;
+    /*font-weight: bold;*/
 }
 
 
@@ -431,7 +452,7 @@
 
 .flex-item {
 
-    margin: 1em;
+    margin: 14px;
 
     background-color: white;
 

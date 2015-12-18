@@ -69,10 +69,6 @@ LineGraph.prototype._build_graph = function(){
  var max_y_value_width = String(max_y_value.toFixed(0)).length * 10
 
 
-console.log("*******")
- console.log(max_y_value)
- console.log(max_y_value_width)
-
  //calcualate constant origin shift
  this._period_arr = this._list(self.data, config.x_field);
  var origin_shift_x = max_y_value_width;
@@ -212,14 +208,16 @@ LineGraph.prototype._draw_points = function(){
 
 LineGraph.prototype._draw_header = function(){
 
+    var state = controller.state;
+
     this._header  = this._chart.append("text")
         .attr("x", "0em")
-        .attr("y", "-2.5em" )
-        .attr("dy", "2em")
+        .attr("y", -21 )
+        .attr("dy", "0em")
         .attr("text-anchor", "left")
         .style("font-size", "1.5em")
         .style("fill", "white")
-        .text("Change over time");
+        .text( controller.config.areaTypeMapping[state.areaType] + ": " + controller.config.indicatorLabels[state.indicator]);
 
 };
 
@@ -228,17 +226,31 @@ LineGraph.prototype._draw_time_vertical = function(){
     var config = this.config;
     var state = controller.state;
 
-    console.log(self._period_arr.indexOf(state.current_period))
+
 
     self._vertical_line = self._chart.append("line")
         .attr("class", "line verticalTimeLine")
-        .attr("x1", self.x(self._period_arr.indexOf(state.current_period)))
-        .attr("x2", self.x(self._period_arr.indexOf(state.current_period)))
-        .attr("y1", self.height)
-        .attr("y2", self.height * 0.1)
         .style("stroke-width", 2)
         .style("stroke", "white")
         .style("fill", "none");
+
+
+    //check if data is available and add change graph
+    if(controller.data_period.length == 0) {
+
+        self._vertical_line
+            .attr("y1", self.height / 2)
+            .attr("y2", self.height /2)
+
+    } else {
+
+        self._vertical_line
+            .attr("x1", self.x(self._period_arr.indexOf(state.current_period)))
+            .attr("x2", self.x(self._period_arr.indexOf(state.current_period)))
+            .attr("y1", self.height)
+            .attr("y2", self.height * 0.1)
+
+    }
 
     self._vertical_line.moveToBack();
 
@@ -294,15 +306,31 @@ LineGraph.prototype._period_change_listener = function() {
 
     var state = controller.state;
     var self = this;
-    var state = controller.state;
     var config = this.config;
 
-    self._vertical_line
-        .transition()
-        .duration(500)
-        .ease("exp")
-        .attr("x1", self.x(self._period_arr.indexOf(state.current_period)))
-        .attr("x2", self.x(self._period_arr.indexOf(state.current_period)))
+    if(controller.data_period.length == 0) {
+
+        self._vertical_line
+            .transition()
+            .duration(500)
+            .ease("exp")
+            .attr("y1", self.height / 2)
+            .attr("y2", self.height /2)
+
+    } else {
+
+        self._vertical_line
+            .transition()
+            .duration(500)
+            .ease("exp")
+            .attr("x1", self.x(self._period_arr.indexOf(state.current_period)))
+            .attr("x2", self.x(self._period_arr.indexOf(state.current_period)))
+            .attr("y1", self.height)
+            .attr("y2", self.height * 0.1)
+
+    }
+
+
 
 
 };

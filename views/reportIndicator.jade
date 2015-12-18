@@ -32,15 +32,38 @@ block content
 
     script(src="/javascripts/init.js")
 
+
+    script.
+        getPage = function(){
+
+            var inArr = ["indicatorTypeSelect", "areaTypeSelect", "genderTypeSelect"];
+            var outArr =[];
+
+            for(var i in inArr){
+                var e = document.getElementById(inArr[i]);
+                outArr[i] = e.options[e.selectedIndex].value;
+            }
+
+            var path = window.location.protocol + "//" + window.location.host + "/IndicatorReport/" + outArr[0] + "/" + outArr[1] + "/" + outArr[2]
+
+            console.log(path)
+
+             window.location.href = path;
+
+
+        }
+
+
+
     .flex-group
         .flex-header-container
             .flex-header-item#headerReportItem
                 select.flex-select#reportTypeSelect
-                    option(value='Indicator Report') Indicator Report:
-                    option(value='Area Report') Area Report:
-                    option(value='Compare Areas') Compare Areas:
+                    option(value='IndicatorReport') Indicator Report:
+                    option(value='AreaReport') Area Report:
+                    option(value='CompareAreas') Compare Areas:
             .flex-header-item#headerIndicatorItem
-                select.flex-select#reportTypeSelect
+                select.flex-select#indicatorTypeSelect
                     option(value='Mortality from chronic liver disease') Mortality from chronic liver disease
                     option(value='Alcohol-specific mortality') Alcohol-specific mortality
                     option(value='Months of life lost due to alcohol') Months of life lost due to alcohol
@@ -55,10 +78,13 @@ block content
                     option(value='DU') Districts and Unitaries
                     option(value='CCG') CCGs
                     option(value='CU') Counties and Unitaries
-            .flex-header-item#headerHighlightItem
-                select.flex-select.addFilterSelect#highlightAreaSelect
-                    option(value='North East Hampshire And Farnham') North East Hampshire And Farnham
-                    option(value='North East Hampshire And Farnham') Short
+            //.flex-header-item#headerHighlightItem
+            //    select.flex-select.addFilterSelect#highlightAreaSelect
+            //        option(value='North East Hampshire And Farnham') North East Hampshire And Farnham
+            //        option(value='North East Hampshire And Farnham') Short
+            .flex-header-item#goButtonItem
+                .btn.btn-default.btn-lg.flex-btn#goButton(onclick='getPage()') Go
+
 
 
         .flex-container

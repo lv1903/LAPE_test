@@ -218,13 +218,14 @@ WessexMap.prototype._select_map_color = function(id){
     var state = controller.state;
     var self = this;
 
-    var val = this.getValueFromPeriodData(id);
+    //var val = this.getValueFromPeriodData(id);
 
-    //if(state.current_area == id){
-    //    return self.cs.highlight_color
-    //} else {
+    if(controller.data_period.length == 0){
+        return "white"
+    } else {
+        var val = this.getValueFromPeriodData(id);
         return d3.interpolateHsl(d3.rgb('#fff'), d3.rgb(this.cs.dark_text_color))((Math.floor(val.percent * 4) / 4).toFixed(1))
-    //}
+    }
 
 };
 

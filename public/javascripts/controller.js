@@ -8,26 +8,47 @@ var Controller = function(data_obj, config, state_obj){
     this.config = config;
 
     this.data = data_obj.data;
-    this.data_period = [];
+
     this.density_data = data_obj.density_obj;
     this.topojson_data = data_obj.topojson_obj;
+
     this.orderedList_data = data_obj.orderedList_obj;
 
     this.state = state_obj;
-
     this.state.current_period = config.defaultPeriod;
+
+    this.data_period = [];
+    this._init_dimensions(this.data); //filer data for current period
+
+    console.log(this.data_period)
+
     //this.state.current_area = "E38000118";
-    this.state.current_area = "E38000198";
+    //pick a random area
+    var randomIndex = Math.floor(Math.random() * this.data_period.length)
+    this.state.current_area = this.data_period[randomIndex]["Area Code"]; //Area Code should be in config!!
+
 
     this.state.current_area_name = this._get_area_name();
 
-
-    this._init_dimensions(this._data);
-
     //console.log(this.state)
+
+    this._update_selects()
 
 
 };
+
+Controller.prototype._update_selects = function(){
+
+    console.log(this.state)
+
+    document.getElementById("indicatorTypeSelect").value = this.state.indicator;
+    document.getElementById("genderTypeSelect").value = this.state.genderType;
+    document.getElementById("areaTypeSelect").value = this.state.areaType;
+
+
+
+
+}
 
 Controller.prototype._get_area_name = function(){
 
@@ -80,10 +101,6 @@ Controller.prototype._area_change = function(id){
 
 
 
-
-
-
-
 Controller.prototype.validate_NaN_to_0 = function(val){
     if(isNaN(val)) return 0; else return Number(val);
 };
@@ -129,6 +146,7 @@ Controller.prototype._wrap = function(text, width, string){
         }
     });
 }
+
 
 
 

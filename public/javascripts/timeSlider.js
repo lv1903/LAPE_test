@@ -115,11 +115,7 @@ TimeSlider.prototype._define_brush = function(){
 
             }
 
-            self.handle
-                .transition()
-                .duration(500)
-                .ease("exp")
-                .attr("transform", "translate(" + self.x(Math.round(value)) + ",0)");
+            self.handle.attr("transform", "translate(" + self.x(Math.round(value)) + ",0)");
 
             self.handle.select('text').text(Math.round(value));
 

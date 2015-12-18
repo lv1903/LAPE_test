@@ -94,8 +94,30 @@ BarGraph.prototype._set_scales = function(){
     var self = this;
     var config = this.config;
 
+    console.log(self.data_period.length)
+
     this.x = d3.scale.linear().range([0, this.width]);
-    this.y = d3.scale.ordinal().rangeRoundBands([0, this.height], .14, .2);
+
+
+    //adjust height of bar graph for more lines
+    var y0 = 0;
+    var y1 = this.height;
+
+    if(self.data_period.length > 7 && self.data_period.length <= 15){
+        console.log("here")
+        y1 += 21;
+    }else if( self.data_period.length > 15){
+        console.log("there")
+        y0 -= 21;
+        y1 += 56;
+    }
+
+    console.log(y0 + " -> " + y1)
+
+    this.y = d3.scale.ordinal().rangeRoundBands([y0, y1], .14, .2);
+
+
+
 
     this.x.domain([0, d3.max(self.data_period, function (d) {return self.validate_NaN_to_0(d[config.value_field]);})]);
     this.y.domain( self.data_period.map(function (d) {return d[config.name_field];}));
@@ -140,7 +162,6 @@ BarGraph.prototype._draw_bars = function(){
     var state = controller.state;
 
 
-
     this._background_bars_right = this._chart_right.selectAll(".background_bar")
         .data(data);
 
@@ -162,11 +183,18 @@ BarGraph.prototype._draw_bars = function(){
         .attr("class", "foreground bar clickable")
         .attr("x", 3)
         .attr("y", function (d, i) {return self.y(d[config.name_field])})
-        .attr("width", function (d, i) {return self.x(self.validate_NaN_to_0(d[config.value_field]))})
+
         .attr("height", function (d, i) {return self.y.rangeBand()})
         .style("stroke-width", "0")
         .style("fill", function(d){ return self._select_color(d)})
         .on("click", self._bar_click.bind(this));
+
+    //check if data is available and add change graph
+    if(controller.data_period.length == 0) {
+        this._bars.attr("width", 0)
+    } else {
+        this._bars.attr("width", function (d, i) {return self.x(self.validate_NaN_to_0(d[config.value_field]))})
+    }
 
 
     this._background_bars_left = this._chart_left.selectAll(".background_bar")
@@ -199,6 +227,13 @@ BarGraph.prototype._draw_bars = function(){
         //.style("fill", "white")
         .on("click", self._bar_click.bind(this));
 
+    //check if data is available and add change graph
+    if(controller.data_period.length == 0) {
+        this._label.text("NA")
+    } else {
+        this._label.text(function(d, i){return self._get_name(d[config.id_field])})
+    }
+
     var format = d3.format("1g")
 
     this._label_value = this._chart_left.selectAll(".value text")
@@ -228,8 +263,8 @@ BarGraph.prototype._draw_header = function(){
 
     this._header  = this._chart_left.append("text")
         .attr("x", "0em")
-        .attr("y", "-2.5em" )
-        .attr("dy", "2em")
+        .attr("y", -21 )
+        .attr("dy", "0em")
         .attr("text-anchor", "left")
         .style("font-size", "1.5em")
         .style("fill", "white")
@@ -260,13 +295,13 @@ BarGraph.prototype._area_change_listener = function() {
     self._bars
         .data(self.data_period)
         .transition()
-        .duration(1000)
+        .duration(500)
         .style("fill", function(d){ return self._select_color(d)});
 
     self._background_bars_left
         .data(self.data_period)
         .transition()
-        .duration(1000)
+        .duration(500)
         .style("fill", function(d){ return self._select_color(d)});
 
 
@@ -279,23 +314,42 @@ BarGraph.prototype._period_change_listener = function() {
     var config = this.config;
     var state = controller.state;
 
-    self.data_period = controller.data_period;
-    self.data_period.sort(self._sort_y("alpha"));
 
-    self.x.domain([0, d3.max(self.data_period, function (d) {return self.validate_NaN_to_0(d[config.value_field]);})]);
+    //check if data is available and add change graph
+    if(controller.data_period.length == 0) {
 
+        self._bars
+            .data(self.data_period)
+            .transition()
+            .duration(750)
+            .attr("width", 0);
 
-    self._bars
-        .data(self.data_period)
-        .transition()
-        .duration(750)
-        .attr("width", function (d, i) {return self.x(self.validate_NaN_to_0(d[config.value_field]))});
+        self._label_value
+            .data(self.data_period)
+            .transition()
+            .duration(750)
+            .text("NA")
 
-    self._label_value
-        .data(self.data_period)
-        .transition()
-        .duration(750)
-        .text(function(d, i){return d[config.value_field].toFixed(0)})
+    } else {
+
+        self.data_period = controller.data_period;
+        self.data_period.sort(self._sort_y("alpha"));
+        self.x.domain([0, d3.max(self.data_period, function (d) {return self.validate_NaN_to_0(d[config.value_field]);})]);
+
+        self._bars
+            .data(self.data_period)
+            .transition()
+            .duration(750)
+            .attr("width", function (d, i) {return self.x(self.validate_NaN_to_0(d[config.value_field]))});
+
+        self._label_value
+            .data(self.data_period)
+            .transition()
+            .duration(750)
+            .text(function(d, i){return d[config.value_field].toFixed(0)})
+
+    }
+
 
 
     //self._chart_right
