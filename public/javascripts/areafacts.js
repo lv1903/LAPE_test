@@ -7,28 +7,34 @@ function AreaFacts(config) {
 
 AreaFacts.prototype._init = function(){
 
-    this._build_graph();
-    this._build_gauge();
-    this._write_facts();
 
-
-
+    this._draw_all();
     this._bindEvents();
 
 
 };
+
+AreaFacts.prototype._draw_all = function(){
+
+    this._build_graph();
+    this._add_help_button();
+    this._build_gauge();
+    this._write_facts();
+
+
+}
 
 AreaFacts.prototype._build_graph = function() {
 
     var config = this.config;
     var self = this;
 
-    var full_width = 300;
-    var full_height = 300;
+    config.full_width = 300;
+    config.full_height = 400;
 
 
-    this.width =  full_width - config.margin.left  - config.margin.right;
-    this.height = full_height - config.margin.bottom - config.margin.top;
+    this.width =  config.full_width - config.margin.left  - config.margin.right;
+    this.height = config.full_height - config.margin.bottom - config.margin.top;
 
     this._svg = d3.select(config.container_id)
         .append("div")
@@ -36,7 +42,7 @@ AreaFacts.prototype._build_graph = function() {
         .append("svg")
         .attr("class", "widget")
         .attr("preserveAspectRatio", "xMinYMin meet")
-        .attr("viewBox", "0 0 " + full_width + " " + full_height )
+        .attr("viewBox", "0 0 " + config.full_width + " " + config.full_height )
         .classed("svg-content-responsive", true)
 
     this._chart = this._svg
@@ -52,9 +58,13 @@ AreaFacts.prototype._build_gauge = function(){
     var config = self.config;
     var state = controller.state;
 
+    var areaType = state.areaType;
+    var indicator = state.indicator;
+    var genderType = state.genderType;
+
     this._gauge_low_label = self._chart.append("text")
         .attr("x", -10)
-        .attr("y", 110)//, bbox.y + bbox.height) //make dynamic
+        .attr("y", 150)//, bbox.y + bbox.height) //make dynamic
         //.attr("dy", "0em")
         .attr("text-anchor", "left")
         .style("font-size", "1em")
@@ -64,7 +74,7 @@ AreaFacts.prototype._build_gauge = function(){
 
     this._gauge_high_label = self._chart.append("text")
         .attr("x", self.width - 35)
-        .attr("y", 110)//, bbox.y + bbox.height) //make dynamic
+        .attr("y", 150)//, bbox.y + bbox.height) //make dynamic
         //.attr("dy", "0em")
         .attr("text-anchor", "right")
         .style("font-size", "1em")
@@ -74,8 +84,7 @@ AreaFacts.prototype._build_gauge = function(){
     //add gauge------------------------------------------------
     var sideLength = 180;
 
-
-    this._gauge = this._gauge(self._chart, {
+    this._gauge = this._fGauge(self._chart, {
         size: sideLength,
         clipWidth: sideLength,
         clipHeight: sideLength,
@@ -85,7 +94,7 @@ AreaFacts.prototype._build_gauge = function(){
         color1: "white",
         color2: self.cs.dark_text_color,
         xTranslate: self.width / 2 - sideLength / 2,
-        yTranslate: 70
+        yTranslate: 110
 
     });
 
@@ -94,8 +103,7 @@ AreaFacts.prototype._build_gauge = function(){
 
 
     //check if data is available for period otherwise send 0 and exit
-    if(controller.data_period.length == 0){
-        console.log("hee")
+    if(controller[areaType][indicator][genderType].data_period.length == 0){
         this._gauge.update(0)
         return
     }
@@ -104,7 +112,7 @@ AreaFacts.prototype._build_gauge = function(){
 
     var val = this.getValueFromPeriodData(state.current_area);
     this._gauge.update(val.percent)
-}
+};
 
 
 
@@ -117,10 +125,14 @@ AreaFacts.prototype._write_facts = function(){
     var config = self.config;
     var state = controller.state;
 
+    var areaType = state.areaType;
+    var indicator = state.indicator;
+    var genderType = state.genderType;
+
     var bbbox;
     var y;
     var x;
-    var delta_y = 30;
+    var delta_y = 42;
     //var font_size = 1.5;
 
 
@@ -141,9 +153,9 @@ AreaFacts.prototype._write_facts = function(){
 
 
     //check if data is available if not write No data
-    if(controller.data_period.length == 0){
+    if(controller[areaType][indicator][genderType].data_period.length == 0){
 
-        bbox = d3.select("#areaFactsHeader").node().getBBox();
+        bbox = d3.select("#areaFactsHeader").node().getBBox(); //this wont work for multiple widgets!!
         y = bbox.height + bbox.y + delta_y; //shift y
         x = 0;
 
@@ -176,7 +188,7 @@ AreaFacts.prototype._write_facts = function(){
     var value, unit;
 
     //add value text---------------------------------------------
-    bbox = d3.select("#areaFactsHeader").node().getBBox();
+    bbox = d3.select("#areaFactsHeader").node().getBBox(); //this wont work for multiple widgets!!
     y = bbox.height + bbox.y + delta_y; //shift y
     x = 0;
 
@@ -219,12 +231,14 @@ AreaFacts.prototype._write_facts = function(){
 
     //add rank text--------------------------------------------
 
+    //console.log(config)
+
 
     prefix = "Ranked ";
     rank = format(val.index + 1);
     middle = "out of ";
-    total = format(controller.orderedList_data[state.current_period].length);
-    suffix = " " + controller.config.areaTypeMapping[state.areaType];
+    total = format(controller[areaType][indicator][genderType].orderedList_data[state.current_period].length);
+    suffix = " " + controller.getKeyByValue(controller.config.areaTypeMapping, state.areaType).toLowerCase();
 
     var stringObj = [
         {"str": prefix, "font_size": "1em"},
@@ -236,12 +250,110 @@ AreaFacts.prototype._write_facts = function(){
 
     var textName = "rankText"
 
-    var y = self.height;
-    var x = 0;
+    //bbox = d3.select(".gaugeSVG").node().getBBox(); //this will not work for multiple widgets!!
+    //console.log(bbox)
+    //y += bbox.y + bbox.height + delta_y;
+    y = 260;
+    x = 0;
 
     self._add_string(self, textName, stringObj, x, y)
 
 };
+
+
+
+AreaFacts.prototype._add_help_button = function(){
+
+    var config = this.config;
+    var self = this;
+
+    var r = 10
+    var margin = 5;
+    var x =  config.full_width - r - margin;
+    var y = r + margin
+
+    this.help_circle = this._svg
+        .append("circle")
+        .attr("class", "clickable")
+        .attr("cx", x)
+        .attr("cy", y)
+        .attr("r", r)
+        .style("fill", "white")
+        .on("click", self._draw_help.bind(this));
+
+
+    this._help_text = this._svg
+        .append('text')
+        .attr("class", "clickable")
+        .attr("x", x)
+        .attr("y", y)
+        .attr("dy", margin)
+        .attr("text-anchor", "middle")
+        .attr('font-family', 'FontAwesome')
+        .style("fill", self.cs.background_color)
+        .text('\uf128')
+        .on("click", self._draw_help.bind(this));
+
+
+};
+
+AreaFacts.prototype._add_return_to_graph_button = function(){
+
+    var config = this.config;
+    var self = this;
+
+    var r = 10
+    var margin = 5;
+    var x =  config.full_width - r - margin;
+    var y = r + margin
+
+    this.help_circle = this._svg
+        .append("circle")
+        .attr("class", "clickable")
+        .attr("cx", x)
+        .attr("cy", y)
+        .attr("r", r)
+        .style("fill", "white")
+        .on("click", self._redraw.bind(this));
+
+
+
+    this._help_text = this._svg
+        .append('text')
+        .attr("class", "clickable")
+        .attr("x", x)
+        .attr("y", y)
+        .attr("dy", margin)
+        .attr("text-anchor", "middle")
+        .attr('font-family', 'FontAwesome')
+        .style("fill", self.cs.background_color)
+        .text('\uf112')
+        .on("click", self._redraw.bind(this));
+
+};
+
+AreaFacts.prototype._draw_help = function(){
+
+    this._svg.remove();
+    this._build_graph();
+    this._draw_help_text();
+    this._add_return_to_graph_button();
+
+};
+
+AreaFacts.prototype._redraw = function(){
+
+    this._svg.remove();
+    this._draw_all();
+
+};
+
+AreaFacts.prototype._draw_help_text = function(){
+    //todo
+};
+
+
+
 
 
 AreaFacts.prototype._bindEvents = function(){
@@ -258,13 +370,15 @@ AreaFacts.prototype._area_change_listener = function(){
     var self = this;
     var state = controller.state;
 
+    var areaType = state.areaType;
+    var indicator = state.indicator;
+    var genderType = state.genderType;
+
     //console.log(val)
 
     //gauge--------------------------------------------------------------------
     //check if data is available for period otherwise send 0
-    console.log(controller.data_period.length)
-    if(controller.data_period.length == 0){
-        console.log("hee")
+    if(controller[areaType][indicator][genderType].data_period.length == 0){
         this._gauge.update(0)
         return
     } else {
@@ -275,7 +389,7 @@ AreaFacts.prototype._area_change_listener = function(){
 
     //rewrite facts instead of transition
 
-    var removeList = [
+    var removeList = [ //this needs to be more specific!!
         ".headerText",
         ".valueText",
         ".countText",
@@ -297,10 +411,14 @@ AreaFacts.prototype._period_change_listener = function() {
     var self = this;
     var state = controller.state;
 
+    var areaType = state.areaType;
+    var indicator = state.indicator;
+    var genderType = state.genderType;
+
 
     //gauge--------------------------------------------------------------------
     //check if data is available for period otherwise send 0
-    if(controller.data_period.length == 0){
+    if(controller[areaType][indicator][genderType].data_period.length == 0){
         this._gauge.update(0)
     } else {
         var val = this.getValueFromPeriodData(state.current_area);
@@ -368,15 +486,19 @@ AreaFacts.prototype.getValueFromPeriodData = function(id){
 
     var state = controller.state;
 
-    var value = controller.data_period.filter(function(d){
+    var areaType = state.areaType;
+    var indicator = state.indicator;
+    var genderType = state.genderType;
+
+    var value = controller[areaType][indicator][genderType].data_period.filter(function(d){
         if(d[config.id_field] == id){return  d}
     })[0][config.value_field];
 
-    var count = controller.data_period.filter(function(d){
+    var count = controller[areaType][indicator][genderType].data_period.filter(function(d){
         if(d[config.id_field] == id){return  d}
     })[0][config.count_field];
 
-    var orderedList = controller.orderedList_data[state.current_period];
+    var orderedList = controller[areaType][indicator][genderType].orderedList_data[state.current_period];
     var index = orderedList.indexOf(value);
     var percent = index / orderedList.length;
 
@@ -386,7 +508,7 @@ AreaFacts.prototype.getValueFromPeriodData = function(id){
 
 
 
-AreaFacts.prototype._gauge = function(container, configuration) {
+AreaFacts.prototype._fGauge = function(container, configuration) {
     var that = {};
     var config = {
         size						: 200,
@@ -484,6 +606,7 @@ AreaFacts.prototype._gauge = function(container, configuration) {
     function render(newValue) {
         svg = container
             .append("g")
+            .attr("class", "gaugeSVG")
             .attr("transform", "translate(" + configuration.xTranslate + "," + configuration.yTranslate + ")")
             .append('svg')
             .attr('class', 'gauge') //should go in config!!

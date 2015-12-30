@@ -39,16 +39,16 @@
   ],
 
   "areaTypeMapping":{
-    "CCG": "CCGs",
-    "CU": "Counties",
-    "DU": "Districts"
+    "CCGs": "CCG",
+    "Counties": "CU",
+    "Districts": "DU"
 
   },
 
   "genderMapping":{
-    "Male": "males",
-    "Female": "females",
-    "Persons": "persons"
+    "males": "Male",
+    "females": "Female",
+    "persons": "Persons"
   },
 
   "indicatorMapping":{
@@ -121,15 +121,15 @@
 
     "CCG": [
       {"id":"E38000120","name":"North Hampshire","short_name":"N Hants"},
-      {"id":"E38000059","name":"Fareham And Gosport","short_name":"Frhm Gspt "},
+      {"id":"E38000059","name":"Fareham And Gosport","short_name":"Frhm Gspt"},
       {"id":"E38000087","name":"Isle of Wight","short_name":"Isle Wght "},
-      {"id":"E38000137","name":"Portsmouth","short_name":"Portsmth "},
+      {"id":"E38000137","name":"Portsmouth","short_name":"Portsmth"},
       {"id":"E38000154","name":"South Eastern Hampshire","short_name":"SE Hants"},
       {"id":"E38000167","name":"Southampton","short_name":"Soton"},
-      {"id":"E38000198","name":"West Hampshire","short_name":"W Hants "},
-      {"id":"E38000045","name":"Dorset","short_name":"Dorset "},
+      {"id":"E38000198","name":"West Hampshire","short_name":"W Hants"},
+      {"id":"E38000045","name":"Dorset","short_name":"Dorset"},
       {"id":"E38000118","name":"North East Hampshire and Farnham","short_name":"NE Hants"},
-      {"id":"E38000206","name":"Wiltshire","short_name":"Wiltshire "}
+      {"id":"E38000206","name":"Wiltshire","short_name":"Wiltshire"}
 
 
     ]

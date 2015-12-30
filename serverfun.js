@@ -5,6 +5,7 @@
 module.exports = {
 
 
+
     getTopoJsons: function(areaTypeObj, areaListObj, callback){
         //input: object with key for area type
         // and property as array of entity objects for required boundaries
@@ -88,10 +89,6 @@ module.exports = {
         for(var i in obj){arr.push(obj[i][key]);}
         return arr
     },
-
-    //getIndicatorMapped: function(indicator){
-    //    return encodeURIComponent(config_obj.LAPE_Config.indicatorMapping[indicator]);
-    //},
 
 
     getSubset: function(allObj, subsetList){
